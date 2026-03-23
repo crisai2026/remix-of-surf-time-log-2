@@ -124,6 +124,7 @@ function ProjectRow({ project }: { project: any }) {
   const [editName, setEditName] = useState(project.name);
   const [editColor, setEditColor] = useState(project.color);
   const [editGoal, setEditGoal] = useState<string>(String(project.weekly_goal_hours || 0));
+  const [editMotor, setEditMotor] = useState<string>(project.motor_number != null ? String(project.motor_number) : "");
   const { data: tasks } = useTasks(project.id);
   const createTask = useCreateTask();
   const deleteTask = useDeleteTask();
@@ -144,6 +145,7 @@ function ProjectRow({ project }: { project: any }) {
       name: editName.trim() || project.name,
       color: editColor,
       weekly_goal_hours: parseFloat(editGoal) || 0,
+      motor_number: editMotor.trim() ? parseInt(editMotor) : null,
     });
     setEditing(false);
   };
@@ -152,6 +154,7 @@ function ProjectRow({ project }: { project: any }) {
     setEditName(project.name);
     setEditColor(project.color);
     setEditGoal(String(project.weekly_goal_hours || 0));
+    setEditMotor(project.motor_number != null ? String(project.motor_number) : "");
     setEditing(false);
   };
 
@@ -184,6 +187,18 @@ function ProjectRow({ project }: { project: any }) {
               className="w-16 bg-transparent text-sm text-center focus:outline-none border-b border-border tabular-nums"
             />
             <span className="text-xs text-muted-foreground">horas</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Motor #:</span>
+            <input
+              type="number"
+              min="1"
+              value={editMotor}
+              onChange={(e) => setEditMotor(e.target.value)}
+              placeholder="—"
+              className="w-12 bg-transparent text-sm text-center focus:outline-none border-b border-border tabular-nums"
+            />
+            <span className="text-[10px] text-muted-foreground">(vacío = no es motor)</span>
           </div>
           <div className="flex items-center gap-2 justify-end">
             <button onClick={handleCancel} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground">

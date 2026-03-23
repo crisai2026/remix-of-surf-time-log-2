@@ -10,11 +10,7 @@ import {
 } from "recharts";
 import { Flame, Clock, TrendingUp, ChevronLeft, ChevronRight, Activity, Pencil } from "lucide-react";
 
-const MOTOR_MAP: Record<string, string> = {
-  "Jobhunt": "Motor 1",
-  "Aprender AI": "Motor 2",
-  "Motores": "Motor 3",
-};
+// Motors are now dynamic from DB (motor_number column on projects)
 
 export function DashboardCharts() {
   const { data: projects } = useProjects();
@@ -117,21 +113,28 @@ export function DashboardCharts() {
     return formatDuration(seconds);
   };
 
-  // Motor + goal data merged
+  // Motor + goal data — dynamic from DB
   const motorGoalData = useMemo(() => {
-    const results: { label: string; projectName: string; hours: number; color: string; goal: number; pct: number }[] = [];
-    Object.entries(MOTOR_MAP).forEach(([projectName, label]) => {
-      const proj = projects?.find(p => p.name === projectName);
-      if (!proj) return;
-      const totalSec = weekEntries
-        ?.filter(e => e.project_id === proj.id)
-        .reduce((s, e) => s + (e.duration_seconds || 0), 0) || 0;
-      const hours = +(totalSec / 3600).toFixed(1);
-      const goal = (proj.weekly_goal_hours as number) || 0;
-      const pct = goal > 0 ? Math.min((hours / goal) * 100, 100) : 0;
-      results.push({ label, projectName, hours, color: proj.color, goal, pct });
-    });
-    return results;
+    if (!projects) return [];
+    return projects
+      .filter(p => (p as any).motor_number != null)
+      .sort((a, b) => ((a as any).motor_number || 0) - ((b as any).motor_number || 0))
+      .map(p => {
+        const totalSec = weekEntries
+          ?.filter(e => e.project_id === p.id)
+          .reduce((s, e) => s + (e.duration_seconds || 0), 0) || 0;
+        const hours = +(totalSec / 3600).toFixed(1);
+        const goal = (p.weekly_goal_hours as number) || 0;
+        const pct = goal > 0 ? Math.min((hours / goal) * 100, 100) : 0;
+        return {
+          label: `Motor ${(p as any).motor_number}`,
+          projectName: p.name,
+          hours,
+          color: p.color,
+          goal,
+          pct,
+        };
+      });
   }, [projects, weekEntries]);
 
   // Heatmap grid
