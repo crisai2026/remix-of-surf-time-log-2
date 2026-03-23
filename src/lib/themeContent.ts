@@ -2,29 +2,29 @@ import type { VisualTheme } from "@/hooks/useVisualTheme";
 
 interface ThemeContent {
   appTitle: string;
-  footerText: string;
+  subtitle: string;
 }
 
 const themeContentMap: Record<VisualTheme, ThemeContent> = {
   claude: {
     appTitle: "Marea Timer",
-    footerText: "Built with focus ✦",
+    subtitle: "",
   },
   nostromo: {
     appTitle: "MAREA TIMER",
-    footerText: "WEYLAND-YUTANI CORP",
+    subtitle: "WEYLAND-YUTANI CORP",
   },
   macintosh: {
     appTitle: "Marea Timer",
-    footerText: "© 1984 Marea Systems Inc.",
+    subtitle: "© 1984 Marea Systems Inc.",
   },
   vaporwave: {
     appTitle: "m a r e a ～ トラッカー",
-    footerText: "ｖａｐｏｒ ～ ２０００",
+    subtitle: "～ トラッカー",
   },
   matrix: {
     appTitle: "MAREA // CONSTRUCT",
-    footerText: "Free your mind, Cris.",
+    subtitle: "Free your mind, Cris.",
   },
 };
 
