@@ -6,6 +6,7 @@ import { DashboardCharts } from "@/components/DashboardCharts";
 import { ProjectManager } from "@/components/ProjectManager";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { AlignmentAhora } from "@/components/AlignmentAhora";
 import { AlignmentSemana } from "@/components/AlignmentSemana";
 import { BarChart3, Clock, FolderOpen } from "lucide-react";
