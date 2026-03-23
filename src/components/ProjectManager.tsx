@@ -124,6 +124,7 @@ function ProjectRow({ project }: { project: any }) {
   const [editName, setEditName] = useState(project.name);
   const [editColor, setEditColor] = useState(project.color);
   const [editGoal, setEditGoal] = useState<string>(String(project.weekly_goal_hours || 0));
+  const [editMotor, setEditMotor] = useState<string>(project.motor_number != null ? String(project.motor_number) : "");
   const { data: tasks } = useTasks(project.id);
   const createTask = useCreateTask();
   const deleteTask = useDeleteTask();
