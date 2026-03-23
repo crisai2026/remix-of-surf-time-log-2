@@ -28,12 +28,14 @@ export default function Index() {
     <div className="min-h-screen bg-background pb-14">
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-xl mx-auto px-5 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">{content.appTitle}</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-lg font-semibold text-foreground tracking-tight shrink-0">{content.appTitle}</h1>
             {content.easterEgg && (
-              <span className="text-[10px] text-muted-foreground tracking-wide flex-1 text-right mr-2">{content.easterEgg}</span>
+              <span className="text-[11px] text-muted-foreground/70 tracking-wider truncate">{content.easterEgg}</span>
             )}
-            <ThemeSelector />
+            <div className="ml-auto shrink-0">
+              <ThemeSelector />
+            </div>
           </div>
 
           {/* Top-level mode toggle */}
