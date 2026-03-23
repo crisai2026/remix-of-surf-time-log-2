@@ -1,38 +1,38 @@
 
 
-## Plan: Fix Play Button in Alignment View
+## Cambios
 
-### Root Cause
+### 1. `src/lib/themeContent.ts`
+- Renombrar `footerText` a `easterEgg` (texto que va en el header)
+- Agregar campo `footerText` fijo = `"Built with focus ✦"` para todos, o mejor: quitar del map y hardcodearlo en Index
+- Claude: easterEgg vacío (no tiene)
+- Nostromo: `"WEYLAND-YUTANI CORP"`
+- Macintosh: `"© 1984 Marea Systems Inc."`
+- Vaporwave: `"～ トラッカー"`
+- Matrix: `"Free your mind, Cris."`
 
-The `handleToggleTimer` function only starts the timer when `!running && displayCategory`. The issue is that `displayCategory` can be `null` when the current time falls in a gap between plan blocks (e.g., 13:00-13:30 gap on Monday). In that case `currentBlock` is `null`, `activeCategory` is `null`, so `displayCategory` is `null` — and the Play button silently does nothing.
+### 2. `src/pages/Index.tsx` — Header (línea 31-33)
+Reorganizar la línea del header para que sea:
 
-Additionally, for categories like "rutina" or "buffer" where the user might also want to start, `findOrCreateProject` needs to handle auto-creation properly.
-
-### Fix — `src/components/AlignmentAhora.tsx`
-
-1. **Make `handleToggleTimer` work when between blocks**: If `displayCategory` is null but `currentBlock` shows a block (or even "Tiempo libre"), open the activity switcher instead of doing nothing — so the user can pick what to track.
-
-2. **Fallback behavior**: If `displayCategory` is truthy, start the planned activity as currently intended. If null, fall back to opening the switcher sheet so the user always gets a response from the Play button.
-
-3. **Simplify**: Change the Play button's `onClick` to always call `handleToggleTimer`, and update `handleToggleTimer`:
-   - If `displayCategory` exists → start that activity (current behavior)
-   - If `displayCategory` is null → open the activity switcher (`setShowSwitcher(true)`)
-
-This ensures the Play button ALWAYS does something visible.
-
-### Technical Detail
-
-```typescript
-const handleToggleTimer = async () => {
-  if (!running) {
-    if (displayCategory) {
-      await handleStartActivity(displayCategory);
-    } else {
-      setShowSwitcher(true);
-    }
-  }
-};
+```text
+[Marea Timer]     [easter egg text]     [ThemeSelector]
 ```
 
-Single file change, ~3 lines modified.
+- `appTitle` a la izquierda
+- Easter egg en texto pequeño/muted, centrado o empujado a la derecha con `flex-1`
+- `ThemeSelector` a la derecha
+- Usar `items-center` y spacing apropiado
+
+### 3. `src/pages/Index.tsx` — Footer (línea 122)
+- Cambiar `{content.footerText}` por `"Built with focus ✦"` hardcoded — mismo texto para todos los temas
+
+### 4. `src/index.css` — Quitar fondos con patrones
+- **Eliminar** el bloque de `.theme-macintosh:not(.dark) body` con el checkerboard pattern (líneas ~407-416)
+- **Eliminar** el bloque de `.theme-macintosh.dark body` con el checkerboard pattern (líneas ~418-427)
+- Dejar que use el `--background` CSS variable plano como todos los demás temas
+
+### Archivos: 3
+1. `src/lib/themeContent.ts` — reestructurar con `easterEgg`
+2. `src/pages/Index.tsx` — mover easter egg al header, restaurar footer fijo
+3. `src/index.css` — eliminar background-image patterns de Macintosh
 
