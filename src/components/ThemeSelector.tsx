@@ -7,12 +7,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useVisualTheme, type VisualTheme } from "@/hooks/useVisualTheme";
 
-const themes: { id: VisualTheme; name: string; swatches: string[] }[] = [
-  { id: "claude", name: "Claude", swatches: ["hsl(16,65%,60%)", "hsl(40,20%,97%)", "hsl(24,10%,10%)"] },
-  { id: "nostromo", name: "Nostromo", swatches: ["#C49A5C", "#0A0A0C", "#5A9AAE"] },
-  { id: "macintosh", name: "Macintosh '84", swatches: ["#000000", "#FFFFFF", "#C0C0C0"] },
-  { id: "vaporwave", name: "Vaporwave", swatches: ["#FF71CE", "#1A1028", "#01CDFE"] },
-  { id: "matrix", name: "Matrix", swatches: ["#00FF41", "#000000", "#008F11"] },
+const themes: { id: VisualTheme; label: string }[] = [
+  { id: "claude", label: "Claude Edition" },
+  { id: "nostromo", label: "Nostromo Edition" },
+  { id: "macintosh", label: "Mac '84 Edition" },
+  { id: "vaporwave", label: "Vaporwave Edition" },
+  { id: "matrix", label: "Matrix Edition" },
 ];
 
 export function ThemeSelector() {
@@ -28,23 +28,14 @@ export function ThemeSelector() {
           <Palette className="h-4 w-4" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52">
+      <DropdownMenuContent align="end" className="w-48">
         {themes.map((t) => (
           <DropdownMenuItem
             key={t.id}
             onClick={() => setVisualTheme(t.id)}
-            className="flex items-center gap-3 cursor-pointer"
+            className="flex items-center justify-between cursor-pointer"
           >
-            <div className="flex gap-1">
-              {t.swatches.map((c, i) => (
-                <div
-                  key={i}
-                  className="w-3.5 h-3.5 rounded-full"
-                  style={{ backgroundColor: c, border: "1px solid rgba(128,128,128,0.3)" }}
-                />
-              ))}
-            </div>
-            <span className="flex-1 text-sm">{t.name}</span>
+            <span className="text-sm font-medium">{t.label}</span>
             {visualTheme === t.id && <Check className="h-3.5 w-3.5 text-primary" />}
           </DropdownMenuItem>
         ))}

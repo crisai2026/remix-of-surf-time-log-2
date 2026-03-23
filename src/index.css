@@ -5,37 +5,28 @@
 @tailwind utilities;
 
 @layer base {
+  /* ===== DEFAULT (Claude) LIGHT ===== */
   :root {
     --background: 40 20% 97%;
     --foreground: 24 10% 10%;
-
     --card: 0 0% 100%;
     --card-foreground: 24 10% 10%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 24 10% 10%;
-
     --primary: 16 65% 60%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 40 15% 93%;
     --secondary-foreground: 24 10% 10%;
-
     --muted: 40 10% 93%;
     --muted-foreground: 24 5% 50%;
-
     --accent: 16 65% 60%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 40 10% 90%;
     --input: 40 10% 90%;
     --ring: 16 65% 60%;
-
     --radius: 0.5rem;
-
     --sidebar-background: 40 15% 95%;
     --sidebar-foreground: 24 10% 10%;
     --sidebar-primary: 16 65% 60%;
@@ -46,35 +37,27 @@
     --sidebar-ring: 16 65% 60%;
   }
 
+  /* ===== DEFAULT (Claude) DARK ===== */
   .dark {
     --background: 20 14% 10%;
     --foreground: 40 15% 90%;
-
     --card: 20 12% 13%;
     --card-foreground: 40 15% 90%;
-
     --popover: 20 12% 13%;
     --popover-foreground: 40 15% 90%;
-
     --primary: 16 65% 60%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 20 10% 18%;
     --secondary-foreground: 40 15% 90%;
-
     --muted: 20 8% 18%;
     --muted-foreground: 40 5% 55%;
-
     --accent: 16 65% 60%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-
     --border: 20 8% 20%;
     --input: 20 8% 20%;
     --ring: 16 65% 60%;
-
     --sidebar-background: 20 12% 12%;
     --sidebar-foreground: 40 15% 90%;
     --sidebar-primary: 16 65% 60%;
@@ -85,8 +68,40 @@
     --sidebar-ring: 16 65% 60%;
   }
 
-  /* ===== THEME: NOSTROMO ===== */
+  /* ===== NOSTROMO LIGHT ===== */
   .theme-nostromo {
+    --background: 40 18% 94%;
+    --foreground: 40 10% 15%;
+    --card: 40 20% 98%;
+    --card-foreground: 40 10% 15%;
+    --popover: 40 20% 98%;
+    --popover-foreground: 40 10% 15%;
+    --primary: 36 49% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 14% 88%;
+    --secondary-foreground: 40 10% 15%;
+    --muted: 40 10% 88%;
+    --muted-foreground: 40 6% 45%;
+    --accent: 194 31% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 10% 82%;
+    --input: 40 10% 82%;
+    --ring: 36 49% 46%;
+    --radius: 0rem;
+    --sidebar-background: 40 18% 94%;
+    --sidebar-foreground: 40 10% 15%;
+    --sidebar-primary: 36 49% 46%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 194 31% 42%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 40 10% 82%;
+    --sidebar-ring: 36 49% 46%;
+  }
+
+  /* ===== NOSTROMO DARK ===== */
+  .theme-nostromo.dark {
     --background: 240 9% 4%;
     --foreground: 40 10% 75%;
     --card: 240 14% 5%;
@@ -117,7 +132,7 @@
     --sidebar-ring: 36 49% 56%;
   }
 
-  /* ===== THEME: MACINTOSH '84 ===== */
+  /* ===== MACINTOSH LIGHT ===== */
   .theme-macintosh {
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
@@ -149,8 +164,72 @@
     --sidebar-ring: 0 0% 0%;
   }
 
-  /* ===== THEME: VAPORWAVE ===== */
+  /* ===== MACINTOSH DARK ===== */
+  .theme-macintosh.dark {
+    --background: 0 0% 6%;
+    --foreground: 0 0% 88%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 88%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 88%;
+    --primary: 0 0% 88%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 88%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 88%;
+    --accent-foreground: 0 0% 6%;
+    --destructive: 0 0% 88%;
+    --destructive-foreground: 0 0% 6%;
+    --border: 0 0% 88%;
+    --input: 0 0% 30%;
+    --ring: 0 0% 88%;
+    --radius: 0rem;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 0 0% 88%;
+    --sidebar-primary-foreground: 0 0% 6%;
+    --sidebar-accent: 0 0% 30%;
+    --sidebar-accent-foreground: 0 0% 88%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 0 0% 88%;
+  }
+
+  /* ===== VAPORWAVE LIGHT ===== */
   .theme-vaporwave {
+    --background: 280 30% 96%;
+    --foreground: 270 30% 15%;
+    --card: 280 40% 99%;
+    --card-foreground: 270 30% 15%;
+    --popover: 280 40% 99%;
+    --popover-foreground: 270 30% 15%;
+    --primary: 321 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 280 25% 91%;
+    --secondary-foreground: 270 30% 15%;
+    --muted: 280 20% 91%;
+    --muted-foreground: 270 15% 45%;
+    --accent: 272 80% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 280 20% 86%;
+    --input: 280 20% 86%;
+    --ring: 321 80% 55%;
+    --radius: 0.875rem;
+    --sidebar-background: 280 30% 96%;
+    --sidebar-foreground: 270 30% 15%;
+    --sidebar-primary: 321 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 272 80% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 280 20% 86%;
+    --sidebar-ring: 321 80% 55%;
+  }
+
+  /* ===== VAPORWAVE DARK ===== */
+  .theme-vaporwave.dark {
     --background: 265 43% 11%;
     --foreground: 264 100% 95%;
     --card: 262 45% 15%;
@@ -181,8 +260,40 @@
     --sidebar-ring: 321 100% 72%;
   }
 
-  /* ===== THEME: MATRIX ===== */
+  /* ===== MATRIX LIGHT ===== */
   .theme-matrix {
+    --background: 120 10% 96%;
+    --foreground: 120 40% 10%;
+    --card: 120 15% 99%;
+    --card-foreground: 120 40% 10%;
+    --popover: 120 15% 99%;
+    --popover-foreground: 120 40% 10%;
+    --primary: 135 70% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 12% 90%;
+    --secondary-foreground: 120 40% 10%;
+    --muted: 120 8% 90%;
+    --muted-foreground: 120 15% 40%;
+    --accent: 135 70% 30%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 135 70% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 120 10% 82%;
+    --input: 120 10% 82%;
+    --ring: 135 70% 30%;
+    --radius: 0rem;
+    --sidebar-background: 120 10% 96%;
+    --sidebar-foreground: 120 40% 10%;
+    --sidebar-primary: 135 70% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 135 70% 30%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 120 10% 82%;
+    --sidebar-ring: 135 70% 30%;
+  }
+
+  /* ===== MATRIX DARK ===== */
+  .theme-matrix.dark {
     --background: 0 0% 0%;
     --foreground: 135 100% 50%;
     --card: 120 50% 2%;
@@ -268,10 +379,10 @@
   letter-spacing: 0.08em;
 }
 
-.theme-nostromo [class*="text-4xl"],
-.theme-nostromo [class*="text-5xl"],
-.theme-nostromo [class*="text-6xl"],
-.theme-nostromo [class*="tabular-nums"] {
+.theme-nostromo.dark [class*="text-4xl"],
+.theme-nostromo.dark [class*="text-5xl"],
+.theme-nostromo.dark [class*="text-6xl"],
+.theme-nostromo.dark [class*="tabular-nums"] {
   text-shadow: 0 0 20px hsla(36, 49%, 56%, 0.3);
 }
 
@@ -281,19 +392,19 @@
   98% { opacity: 1; }
 }
 
-.theme-nostromo #root {
+.theme-nostromo.dark #root {
   animation: crt-flicker 8s infinite;
 }
 
 .theme-nostromo .card,
 .theme-nostromo [class*="bg-card"] {
-  border: 1px solid hsl(60 7% 11%);
+  border: 1px solid hsl(var(--border));
   box-shadow: none;
 }
 
 /* ===== MACINTOSH EFFECTS ===== */
 
-.theme-macintosh body {
+.theme-macintosh:not(.dark) body {
   background-color: #FFFFFF;
   background-image:
     linear-gradient(45deg, #C0C0C0 25%, transparent 25%),
@@ -304,20 +415,31 @@
   background-position: 0 0, 0 2px, 2px -2px, -2px 0;
 }
 
+.theme-macintosh.dark body {
+  background-color: hsl(0 0% 6%);
+  background-image:
+    linear-gradient(45deg, hsl(0 0% 12%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(0 0% 12%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(0 0% 12%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(0 0% 12%) 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0;
+}
+
 .theme-macintosh main {
-  background: white;
-  border: 2px solid black;
-  box-shadow: 4px 4px 0 black;
+  background: hsl(var(--card));
+  border: 2px solid hsl(var(--border));
+  box-shadow: 4px 4px 0 hsl(var(--border));
 }
 
 .theme-macintosh header {
-  background: white !important;
+  background: hsl(var(--card)) !important;
   backdrop-filter: none !important;
-  border-bottom: 2px solid black !important;
+  border-bottom: 2px solid hsl(var(--border)) !important;
 }
 
 .theme-macintosh [class*="bg-card"] {
-  border: 2px solid black;
+  border: 2px solid hsl(var(--border));
   box-shadow: none;
 }
 
@@ -326,8 +448,8 @@
 }
 
 .theme-macintosh [class*="bg-primary"]:not([class*="foreground"]) {
-  border: 2px solid black;
-  box-shadow: 2px 2px 0 black;
+  border: 2px solid hsl(var(--border));
+  box-shadow: 2px 2px 0 hsl(var(--border));
 }
 
 .theme-macintosh [class*="bg-primary"]:active {
@@ -337,16 +459,25 @@
 
 /* ===== VAPORWAVE EFFECTS ===== */
 
-.theme-vaporwave h1,
-.theme-vaporwave h2,
-.theme-vaporwave h3 {
+.theme-vaporwave.dark h1,
+.theme-vaporwave.dark h2,
+.theme-vaporwave.dark h3 {
   background: linear-gradient(135deg, #FF71CE 0%, #B967FF 50%, #01CDFE 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.theme-vaporwave [class*="bg-card"]:not(button) {
+.theme-vaporwave:not(.dark) h1,
+.theme-vaporwave:not(.dark) h2,
+.theme-vaporwave:not(.dark) h3 {
+  background: linear-gradient(135deg, hsl(321 80% 45%) 0%, hsl(272 70% 45%) 50%, hsl(194 80% 35%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-vaporwave.dark [class*="bg-card"]:not(button) {
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -357,7 +488,7 @@
 }
 
 .theme-vaporwave [class*="bg-primary"]:not([class*="foreground"]) {
-  background: linear-gradient(135deg, #FF71CE 0%, #B967FF 50%, #01CDFE 100%) !important;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%) !important;
   color: white !important;
 }
 
@@ -368,11 +499,11 @@
 
 /* ===== MATRIX EFFECTS ===== */
 
-.theme-matrix h1, .theme-matrix h2, .theme-matrix h3,
-.theme-matrix [class*="text-4xl"],
-.theme-matrix [class*="text-5xl"],
-.theme-matrix [class*="text-6xl"],
-.theme-matrix [class*="tabular-nums"] {
+.theme-matrix.dark h1, .theme-matrix.dark h2, .theme-matrix.dark h3,
+.theme-matrix.dark [class*="text-4xl"],
+.theme-matrix.dark [class*="text-5xl"],
+.theme-matrix.dark [class*="text-6xl"],
+.theme-matrix.dark [class*="tabular-nums"] {
   text-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 0 40px rgba(0, 255, 65, 0.1);
 }
 
@@ -384,7 +515,7 @@
 
 .theme-matrix .card,
 .theme-matrix [class*="bg-card"] {
-  border: 1px solid hsl(120 100% 7%);
+  border: 1px solid hsl(var(--border));
   box-shadow: none;
 }
 
@@ -397,7 +528,7 @@
   position: relative;
 }
 
-.theme-matrix main::after {
+.theme-matrix.dark main::after {
   content: '';
   position: absolute;
   left: 0;

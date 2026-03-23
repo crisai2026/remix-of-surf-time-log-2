@@ -10,6 +10,8 @@ import { ThemeSelector } from "@/components/ThemeSelector";
 import { AlignmentAhora } from "@/components/AlignmentAhora";
 import { AlignmentSemana } from "@/components/AlignmentSemana";
 import { BarChart3, Clock, FolderOpen } from "lucide-react";
+import { useVisualTheme } from "@/hooks/useVisualTheme";
+import { getThemeContent } from "@/lib/themeContent";
 
 type AppMode = "tracker" | "alignment";
 type TrackerTab = "timer" | "dashboard" | "projects";
@@ -19,13 +21,15 @@ export default function Index() {
   const [mode, setMode] = useState<AppMode>("tracker");
   const [trackerTab, setTrackerTab] = useState<TrackerTab>("timer");
   const [alignmentTab, setAlignmentTab] = useState<AlignmentTab>("ahora");
+  const { visualTheme } = useVisualTheme();
+  const content = getThemeContent(visualTheme);
 
   return (
     <div className="min-h-screen bg-background pb-14">
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-xl mx-auto px-5 py-3">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">Marea Timer</h1>
+            <h1 className="text-lg font-semibold text-foreground tracking-tight">{content.appTitle}</h1>
             <ThemeSelector />
           </div>
 
@@ -115,6 +119,7 @@ export default function Index() {
         <div className="max-w-xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
           <ThemeToggle />
           <NotificationSettings />
+          <span className="text-[10px] text-muted-foreground ml-2 hidden sm:inline">{content.footerText}</span>
         </div>
       </div>
     </div>
