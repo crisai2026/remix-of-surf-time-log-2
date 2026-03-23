@@ -154,6 +154,7 @@ function ProjectRow({ project }: { project: any }) {
     setEditName(project.name);
     setEditColor(project.color);
     setEditGoal(String(project.weekly_goal_hours || 0));
+    setEditMotor(project.motor_number != null ? String(project.motor_number) : "");
     setEditing(false);
   };
 
