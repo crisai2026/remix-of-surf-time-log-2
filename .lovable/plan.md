@@ -1,38 +1,26 @@
 
 
-## Plan: Fix Play Button in Alignment View
+# Easter Eggs: Mover al Header, Restaurar Footer
 
-### Root Cause
+## Problema
+El footer muestra el easter egg de cada tema (ej: "WEYLAND-YUTANI CORP") para todos, cuando debería siempre decir "Built with focus ✦". Los easter eggs deberían estar junto al título "Marea Timer" en el header.
 
-The `handleToggleTimer` function only starts the timer when `!running && displayCategory`. The issue is that `displayCategory` can be `null` when the current time falls in a gap between plan blocks (e.g., 13:00-13:30 gap on Monday). In that case `currentBlock` is `null`, `activeCategory` is `null`, so `displayCategory` is `null` — and the Play button silently does nothing.
+## Cambios
 
-Additionally, for categories like "rutina" or "buffer" where the user might also want to start, `findOrCreateProject` needs to handle auto-creation properly.
+### 1. `src/lib/themeContent.ts`
+- Cambiar `footerText` por `subtitle` (el easter egg que va al lado del título)
+- El footer siempre será "Built with focus ✦" (hardcoded, no en el map)
+- Claude no tiene subtitle (string vacío)
+- Nostromo: `"WEYLAND-YUTANI CORP"`
+- Macintosh: `"© 1984 Marea Systems Inc."`
+- Vaporwave: `"～ トラッカー"`
+- Matrix: `"Free your mind, Cris."`
 
-### Fix — `src/components/AlignmentAhora.tsx`
+### 2. `src/pages/Index.tsx`
+- **Header (línea 32):** Mostrar `content.appTitle` + si hay `content.subtitle`, un `<span>` pequeño al lado con texto muted (ej: `text-[10px] text-muted-foreground ml-2`)
+- **Footer (línea 122):** Cambiar `{content.footerText}` por el string fijo `"Built with focus ✦"`
 
-1. **Make `handleToggleTimer` work when between blocks**: If `displayCategory` is null but `currentBlock` shows a block (or even "Tiempo libre"), open the activity switcher instead of doing nothing — so the user can pick what to track.
-
-2. **Fallback behavior**: If `displayCategory` is truthy, start the planned activity as currently intended. If null, fall back to opening the switcher sheet so the user always gets a response from the Play button.
-
-3. **Simplify**: Change the Play button's `onClick` to always call `handleToggleTimer`, and update `handleToggleTimer`:
-   - If `displayCategory` exists → start that activity (current behavior)
-   - If `displayCategory` is null → open the activity switcher (`setShowSwitcher(true)`)
-
-This ensures the Play button ALWAYS does something visible.
-
-### Technical Detail
-
-```typescript
-const handleToggleTimer = async () => {
-  if (!running) {
-    if (displayCategory) {
-      await handleStartActivity(displayCategory);
-    } else {
-      setShowSwitcher(true);
-    }
-  }
-};
-```
-
-Single file change, ~3 lines modified.
+## Archivos: 2
+- `src/lib/themeContent.ts`
+- `src/pages/Index.tsx`
 
