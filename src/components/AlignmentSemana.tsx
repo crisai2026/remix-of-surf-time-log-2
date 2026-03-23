@@ -16,6 +16,7 @@ function useDarkMode() {
 export function AlignmentSemana() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const dark = useDarkMode();
+  const { data: projects } = useProjects();
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
 
