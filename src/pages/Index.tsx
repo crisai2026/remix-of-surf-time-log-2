@@ -29,7 +29,10 @@ export default function Index() {
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-xl mx-auto px-5 py-3">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">{content.appTitle}</h1>
+            <div className="flex items-baseline gap-2">
+              <h1 className="text-lg font-semibold text-foreground tracking-tight">{content.appTitle}</h1>
+              {content.subtitle && <span className="text-[10px] text-muted-foreground tracking-wide">{content.subtitle}</span>}
+            </div>
             <ThemeSelector />
           </div>
 
