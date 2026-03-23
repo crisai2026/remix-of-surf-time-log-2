@@ -10,11 +10,7 @@ import {
 } from "recharts";
 import { Flame, Clock, TrendingUp, ChevronLeft, ChevronRight, Activity, Pencil } from "lucide-react";
 
-const MOTOR_MAP: Record<string, string> = {
-  "Jobhunt": "Motor 1",
-  "Aprender AI": "Motor 2",
-  "Motores": "Motor 3",
-};
+// Motors are now dynamic from DB (motor_number column on projects)
 
 export function DashboardCharts() {
   const { data: projects } = useProjects();
