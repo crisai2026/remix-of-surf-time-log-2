@@ -188,6 +188,18 @@ function ProjectRow({ project }: { project: any }) {
             />
             <span className="text-xs text-muted-foreground">horas</span>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Motor #:</span>
+            <input
+              type="number"
+              min="1"
+              value={editMotor}
+              onChange={(e) => setEditMotor(e.target.value)}
+              placeholder="—"
+              className="w-12 bg-transparent text-sm text-center focus:outline-none border-b border-border tabular-nums"
+            />
+            <span className="text-[10px] text-muted-foreground">(vacío = no es motor)</span>
+          </div>
           <div className="flex items-center gap-2 justify-end">
             <button onClick={handleCancel} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground">
               <X className="h-3.5 w-3.5" />
