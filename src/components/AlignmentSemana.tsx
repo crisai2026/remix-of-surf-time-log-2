@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useProjects } from "@/lib/hooks/useProjects";
 import { Flame, Check, Minus, X as XIcon } from "lucide-react";
 import {
-  WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT, MOTOR_GOALS,
+  WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT,
   getDayName, getPlannedMinutesForDay, timeToMinutes, type PlanBlock,
 } from "@/lib/weeklyPlan";
 import { getWeekDatesForOffset } from "@/lib/formatTime";
