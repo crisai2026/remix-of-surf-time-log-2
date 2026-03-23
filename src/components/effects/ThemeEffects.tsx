@@ -93,7 +93,6 @@ export function ThemeEffects() {
   return (
     <>
       {visualTheme === "matrix" && <MatrixRain />}
-      {(visualTheme === "nostromo" || visualTheme === "matrix") && <Scanlines />}
       {visualTheme === "vaporwave" && <VaporwaveBackground />}
     </>
   );

@@ -206,7 +206,12 @@ export function AlignmentSemana() {
                 : "border-border bg-card"
             }`}
           >
-            <p className="text-[10px] text-muted-foreground">{dayAbbrs[i]}</p>
+            <p className="text-[10px] text-muted-foreground">
+              {dayAbbrs[i]}
+              {(visualTheme === "nostromo" || visualTheme === "matrix") && weekDates[i] === new Date().toISOString().slice(0, 10) && (
+                <span className="animate-blink ml-0.5">█</span>
+              )}
+            </p>
             <p className="text-sm font-semibold tabular-nums">{d.hasData ? `${d.pct}%` : "—"}</p>
           </button>
         ))}

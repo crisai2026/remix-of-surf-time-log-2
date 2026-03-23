@@ -509,22 +509,3 @@
   box-shadow: none;
 }
 
-@keyframes matrix-scanline {
-  0% { top: -2px; }
-  100% { top: 100%; }
-}
-
-.theme-matrix main {
-  position: relative;
-}
-
-.theme-matrix.dark main::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(0, 255, 65, 0.1);
-  animation: matrix-scanline 4s linear infinite;
-  pointer-events: none;
-}
