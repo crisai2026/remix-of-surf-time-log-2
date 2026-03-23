@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects } from "@/lib/hooks/useProjects";
@@ -17,6 +18,7 @@ export function AlignmentSemana() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const dark = useDarkMode();
   const { data: projects } = useProjects();
+  const { visualTheme } = useVisualTheme();
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
 
@@ -204,7 +206,12 @@ export function AlignmentSemana() {
                 : "border-border bg-card"
             }`}
           >
-            <p className="text-[10px] text-muted-foreground">{dayAbbrs[i]}</p>
+            <p className="text-[10px] text-muted-foreground">
+              {dayAbbrs[i]}
+              {(visualTheme === "nostromo" || visualTheme === "matrix") && weekDates[i] === new Date().toISOString().slice(0, 10) && (
+                <span className="animate-blink ml-0.5">█</span>
+              )}
+            </p>
             <p className="text-sm font-semibold tabular-nums">{d.hasData ? `${d.pct}%` : "—"}</p>
           </button>
         ))}
