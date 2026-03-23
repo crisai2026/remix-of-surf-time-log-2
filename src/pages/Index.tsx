@@ -119,7 +119,7 @@ export default function Index() {
         <div className="max-w-xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
           <ThemeToggle />
           <NotificationSettings />
-          <span className="text-[10px] text-muted-foreground ml-2 hidden sm:inline">{content.footerText}</span>
+          <span className="text-[11px] text-muted-foreground ml-2">{content.footerText}</span>
         </div>
       </div>
     </div>
