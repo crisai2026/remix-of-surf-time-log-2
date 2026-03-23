@@ -145,6 +145,7 @@ function ProjectRow({ project }: { project: any }) {
       name: editName.trim() || project.name,
       color: editColor,
       weekly_goal_hours: parseFloat(editGoal) || 0,
+      motor_number: editMotor.trim() ? parseInt(editMotor) : null,
     });
     setEditing(false);
   };
