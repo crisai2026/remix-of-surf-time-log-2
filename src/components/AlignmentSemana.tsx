@@ -100,36 +100,39 @@ export function AlignmentSemana() {
     return Math.round(withData.reduce((s, d) => s + d.pct, 0) / withData.length);
   }, [dayAlignments]);
 
-  // Motor comparison
+  // Motor comparison — dynamic from DB
   const motorData = useMemo(() => {
-    if (!weekEntries) return [];
-    return Object.entries(MOTOR_GOALS).map(([motorNum, info]) => {
-      const projectName = CATEGORY_TO_PROJECT[info.category];
+    if (!weekEntries || motorProjects.length === 0) return [];
+    return motorProjects.map(mp => {
       const actualSec = weekEntries
-        .filter(e => (e.projects as any)?.name === projectName)
+        .filter(e => e.project_id === mp.id)
         .reduce((s, e) => s + (e.duration_seconds || 0), 0);
       const actualHours = +(actualSec / 3600).toFixed(1);
 
+      const cat = Object.entries(CATEGORY_TO_PROJECT).find(([_, name]) => name === mp.name)?.[0];
       let plannedMin = 0;
-      for (let d = 0; d < 5; d++) {
-        plannedMin += getPlannedMinutesForDay(d, info.category);
+      if (cat) {
+        for (let d = 0; d < 5; d++) {
+          plannedMin += getPlannedMinutesForDay(d, cat);
+        }
       }
       const plannedHours = +(plannedMin / 60).toFixed(1);
+      const goalHours = (mp.weekly_goal_hours as number) || 0;
 
-      const style = CATEGORY_STYLES[info.category];
+      const style = cat ? CATEGORY_STYLES[cat] : null;
       return {
-        motor: Number(motorNum),
-        label: info.label,
+        motor: (mp as any).motor_number,
+        label: `Motor ${(mp as any).motor_number} · ${mp.name}`,
         actualHours,
         plannedHours,
-        goalHours: info.weeklyHours,
-        pct: info.weeklyHours > 0 ? Math.min((actualHours / info.weeklyHours) * 100, 100) : 0,
-        color: style?.textColor || "hsl(var(--primary))",
+        goalHours,
+        pct: goalHours > 0 ? Math.min((actualHours / goalHours) * 100, 100) : 0,
+        color: style?.textColor || mp.color,
         lightBg: style?.lightBg || "hsl(var(--secondary))",
         darkBg: style?.darkBg || "hsl(var(--secondary))",
       };
     });
-  }, [weekEntries]);
+  }, [weekEntries, motorProjects]);
 
   // Day detail
   const dayDetail = useMemo(() => {
