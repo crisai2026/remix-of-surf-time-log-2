@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           icon: string | null
           id: string
+          motor_number: number | null
           name: string
           sort_order: number
           weekly_goal_hours: number | null
@@ -29,6 +30,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           id?: string
+          motor_number?: number | null
           name: string
           sort_order?: number
           weekly_goal_hours?: number | null
@@ -38,6 +40,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           id?: string
+          motor_number?: number | null
           name?: string
           sort_order?: number
           weekly_goal_hours?: number | null
