@@ -1,38 +1,33 @@
 
 
-## Cambios
+## Plan: Motores dinámicos desde la base de datos
 
-### 1. `src/lib/themeContent.ts`
-- Renombrar `footerText` a `easterEgg` (texto que va en el header)
-- Agregar campo `footerText` fijo = `"Built with focus ✦"` para todos, o mejor: quitar del map y hardcodearlo en Index
-- Claude: easterEgg vacío (no tiene)
-- Nostromo: `"WEYLAND-YUTANI CORP"`
-- Macintosh: `"© 1984 Marea Systems Inc."`
-- Vaporwave: `"～ トラッカー"`
-- Matrix: `"Free your mind, Cris."`
+**Problema actual:** Los motores están hardcodeados en `MOTOR_MAP` y en `weeklyPlan.ts`. Si agregas un nuevo proyecto con meta semanal, no aparece como motor en el dashboard.
 
-### 2. `src/pages/Index.tsx` — Header (línea 31-33)
-Reorganizar la línea del header para que sea:
+**Solución:** Derivar los motores directamente de los proyectos que tengan `weekly_goal_hours > 0` en la base de datos, y agregar un campo `motor` a la tabla `projects` para asignar número de motor.
 
-```text
-[Marea Timer]     [easter egg text]     [ThemeSelector]
-```
+### Cambios
 
-- `appTitle` a la izquierda
-- Easter egg en texto pequeño/muted, centrado o empujado a la derecha con `flex-1`
-- `ThemeSelector` a la derecha
-- Usar `items-center` y spacing apropiado
+**1. Migración: agregar columna `motor_number` a `projects`**
+- Columna `motor_number integer nullable` — si tiene valor, es un motor
+- Migrar datos existentes: Jobhunt → 1, Aprender AI → 2, Proyectos → 3
 
-### 3. `src/pages/Index.tsx` — Footer (línea 122)
-- Cambiar `{content.footerText}` por `"Built with focus ✦"` hardcoded — mismo texto para todos los temas
+**2. `src/components/DashboardCharts.tsx`**
+- Eliminar `MOTOR_MAP` hardcodeado
+- Cambiar `motorGoalData` para filtrar proyectos donde `motor_number IS NOT NULL` y ordenar por `motor_number`
+- Label generado: `"Motor {n}"` desde el campo
 
-### 4. `src/index.css` — Quitar fondos con patrones
-- **Eliminar** el bloque de `.theme-macintosh:not(.dark) body` con el checkerboard pattern (líneas ~407-416)
-- **Eliminar** el bloque de `.theme-macintosh.dark body` con el checkerboard pattern (líneas ~418-427)
-- Dejar que use el `--background` CSS variable plano como todos los demás temas
+**3. `src/components/ProjectManager.tsx`**
+- Agregar opción para asignar número de motor al crear/editar proyecto
+- Input numérico opcional junto a la meta semanal
 
-### Archivos: 3
-1. `src/lib/themeContent.ts` — reestructurar con `easterEgg`
-2. `src/pages/Index.tsx` — mover easter egg al header, restaurar footer fijo
-3. `src/index.css` — eliminar background-image patterns de Macintosh
+**4. `src/components/AlignmentSemana.tsx`**
+- Cambiar `MOTOR_GOALS` hardcodeado por query dinámica: proyectos con `motor_number != null`
+- Usar `weekly_goal_hours` del proyecto como meta
+
+**5. `src/lib/weeklyPlan.ts`**
+- Mantener `CATEGORY_STYLES` para los colores del plan semanal (es visual)
+- `MOTOR_GOALS` se puede deprecar ya que viene de la DB
+
+### Archivos: 4 archivos + 1 migración
 
