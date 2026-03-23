@@ -57,10 +57,17 @@ export function AlignmentSemana() {
     },
   });
 
-  // Calculate alignment per day
+  // Get motor projects from DB
+  const motorProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects
+      .filter(p => (p as any).motor_number != null)
+      .sort((a, b) => ((a as any).motor_number || 0) - ((b as any).motor_number || 0));
+  }, [projects]);
+
+  // Calculate alignment per day using motor projects
   const dayAlignments = useMemo(() => {
-    if (!weekEntries) return [];
-    const motorCategories = ["jobhunt", "ai", "proyectos"];
+    if (!weekEntries || motorProjects.length === 0) return [];
 
     return weekDates.slice(0, 5).map((date, dayIndex) => {
       const dayEntries = weekEntries.filter(e => e.start_time.startsWith(date));
@@ -68,11 +75,12 @@ export function AlignmentSemana() {
       let totalPlanned = 0;
       let totalMatch = 0;
 
-      for (const cat of motorCategories) {
-        const plannedMin = getPlannedMinutesForDay(dayIndex, cat);
-        const projectName = CATEGORY_TO_PROJECT[cat];
+      for (const mp of motorProjects) {
+        // Find the category for this project in CATEGORY_TO_PROJECT (reverse lookup)
+        const cat = Object.entries(CATEGORY_TO_PROJECT).find(([_, name]) => name === mp.name)?.[0];
+        const plannedMin = cat ? getPlannedMinutesForDay(dayIndex, cat) : 0;
         const actualSec = dayEntries
-          .filter(e => (e.projects as any)?.name === projectName)
+          .filter(e => e.project_id === mp.id)
           .reduce((s, e) => s + (e.duration_seconds || 0), 0);
         const actualMin = actualSec / 60;
 
@@ -84,7 +92,7 @@ export function AlignmentSemana() {
       const hasData = dayEntries.length > 0;
       return { date, dayIndex, pct, hasData };
     });
-  }, [weekEntries, weekDates]);
+  }, [weekEntries, weekDates, motorProjects]);
 
   const weekAlignment = useMemo(() => {
     const withData = dayAlignments.filter(d => d.hasData);
