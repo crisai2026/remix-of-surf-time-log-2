@@ -1,33 +1,37 @@
-
-
-## Plan: Motores dinámicos desde la base de datos
-
-**Problema actual:** Los motores están hardcodeados en `MOTOR_MAP` y en `weeklyPlan.ts`. Si agregas un nuevo proyecto con meta semanal, no aparece como motor en el dashboard.
-
-**Solución:** Derivar los motores directamente de los proyectos que tengan `weekly_goal_hours > 0` en la base de datos, y agregar un campo `motor` a la tabla `projects` para asignar número de motor.
+## Plan: Efectos terminales para Nostromo y Matrix
 
 ### Cambios
 
-**1. Migración: agregar columna `motor_number` a `projects`**
-- Columna `motor_number integer nullable` — si tiene valor, es un motor
-- Migrar datos existentes: Jobhunt → 1, Aprender AI → 2, Proyectos → 3
+**1. `src/components/effects/ThemeEffects.tsx**`
 
-**2. `src/components/DashboardCharts.tsx`**
-- Eliminar `MOTOR_MAP` hardcodeado
-- Cambiar `motorGoalData` para filtrar proyectos donde `motor_number IS NOT NULL` y ordenar por `motor_number`
-- Label generado: `"Motor {n}"` desde el campo
+- Eliminar el componente `Scanlines` por completo
+- Quitar su renderizado de ambos temas (Nostromo y Matrix)
 
-**3. `src/components/ProjectManager.tsx`**
-- Agregar opción para asignar número de motor al crear/editar proyecto
-- Input numérico opcional junto a la meta semanal
+**2. `src/index.css**`
 
-**4. `src/components/AlignmentSemana.tsx`**
-- Cambiar `MOTOR_GOALS` hardcodeado por query dinámica: proyectos con `motor_number != null`
-- Usar `weekly_goal_hours` del proyecto como meta
+- Agregar animación `blink` con `step-end` y clase `.animate-blink`
+- Hacer el CRT flicker más notorio: bajar opacidad a `0.6` en el parpadeo (era `0.85`) y acelerar el ciclo a `4s` (era `8s`)
+- Quitar `@keyframes matrix-scanline` 
 
-**5. `src/lib/weeklyPlan.ts`**
-- Mantener `CATEGORY_STYLES` para los colores del plan semanal (es visual)
-- `MOTOR_GOALS` se puede deprecar ya que viene de la DB
+**3. `src/components/AlignmentSemana.tsx**`
 
-### Archivos: 4 archivos + 1 migración
+- Importar `useVisualTheme`
+- Calcular `todayIndex` comparando `weekDates` con la fecha actual
+- En línea 207, después de `dayAbbrs[i]`, mostrar `█` parpadeante si el tema es Nostromo y es el día actual:
 
+```tsx
+<p className="text-[10px] text-muted-foreground">
+  {dayAbbrs[i]}
+  {(visualTheme === "nostromo" || visualTheme === "matrix") && todayIndex === i && (
+    <span className="animate-blink ml-0.5">█</span>
+  )}
+</p>
+```
+
+### Resumen
+
+- **Quitar**: scanlines de ambos temas
+- **Mantener y amplificar**: CRT flicker en Nostromo
+- **Agregar**: cursor `█` parpadeante en día actual para ambos temas
+
+### Archivos: 3
