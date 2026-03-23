@@ -1,0 +1,1 @@
+ALTER TABLE public.projects ADD COLUMN weekly_goal_hours numeric DEFAULT 0;
