@@ -30,6 +30,9 @@ export default function Index() {
         <div className="max-w-xl mx-auto px-5 py-3">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-lg font-semibold text-foreground tracking-tight">{content.appTitle}</h1>
+            {content.easterEgg && (
+              <span className="text-[10px] text-muted-foreground tracking-wide flex-1 text-right mr-2">{content.easterEgg}</span>
+            )}
             <ThemeSelector />
           </div>
 
