@@ -6,6 +6,7 @@ import { DashboardCharts } from "@/components/DashboardCharts";
 import { ProjectManager } from "@/components/ProjectManager";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { AlignmentAhora } from "@/components/AlignmentAhora";
 import { AlignmentSemana } from "@/components/AlignmentSemana";
 import { BarChart3, Clock, FolderOpen } from "lucide-react";
@@ -25,6 +26,7 @@ export default function Index() {
         <div className="max-w-xl mx-auto px-5 py-3">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Marea Timer</h1>
+            <ThemeSelector />
           </div>
 
           {/* Top-level mode toggle */}

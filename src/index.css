@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700&family=VT323&family=Lexend+Deca:wght@400;500;600;700&family=Major+Mono+Display&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -84,6 +84,134 @@
     --sidebar-border: 20 8% 20%;
     --sidebar-ring: 16 65% 60%;
   }
+
+  /* ===== THEME: NOSTROMO ===== */
+  .theme-nostromo {
+    --background: 240 9% 4%;
+    --foreground: 40 10% 75%;
+    --card: 240 14% 5%;
+    --card-foreground: 40 10% 75%;
+    --popover: 240 14% 5%;
+    --popover-foreground: 40 10% 75%;
+    --primary: 36 49% 56%;
+    --primary-foreground: 240 9% 4%;
+    --secondary: 240 11% 7%;
+    --secondary-foreground: 40 10% 75%;
+    --muted: 240 11% 7%;
+    --muted-foreground: 47 6% 45%;
+    --accent: 194 31% 52%;
+    --accent-foreground: 240 9% 4%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 7% 11%;
+    --input: 60 7% 11%;
+    --ring: 36 49% 56%;
+    --radius: 0rem;
+    --sidebar-background: 240 9% 4%;
+    --sidebar-foreground: 40 10% 75%;
+    --sidebar-primary: 36 49% 56%;
+    --sidebar-primary-foreground: 240 9% 4%;
+    --sidebar-accent: 194 31% 52%;
+    --sidebar-accent-foreground: 240 9% 4%;
+    --sidebar-border: 60 7% 11%;
+    --sidebar-ring: 36 49% 56%;
+  }
+
+  /* ===== THEME: MACINTOSH '84 ===== */
+  .theme-macintosh {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 91%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 91%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 0%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 75%;
+    --ring: 0 0% 0%;
+    --radius: 0rem;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 75%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 0%;
+    --sidebar-ring: 0 0% 0%;
+  }
+
+  /* ===== THEME: VAPORWAVE ===== */
+  .theme-vaporwave {
+    --background: 265 43% 11%;
+    --foreground: 264 100% 95%;
+    --card: 262 45% 15%;
+    --card-foreground: 264 100% 95%;
+    --popover: 262 45% 15%;
+    --popover-foreground: 264 100% 95%;
+    --primary: 321 100% 72%;
+    --primary-foreground: 265 43% 11%;
+    --secondary: 262 45% 15%;
+    --secondary-foreground: 264 100% 95%;
+    --muted: 262 45% 15%;
+    --muted-foreground: 265 17% 43%;
+    --accent: 272 100% 70%;
+    --accent-foreground: 265 43% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 265 20% 20%;
+    --input: 265 20% 20%;
+    --ring: 321 100% 72%;
+    --radius: 0.875rem;
+    --sidebar-background: 265 43% 11%;
+    --sidebar-foreground: 264 100% 95%;
+    --sidebar-primary: 321 100% 72%;
+    --sidebar-primary-foreground: 265 43% 11%;
+    --sidebar-accent: 272 100% 70%;
+    --sidebar-accent-foreground: 265 43% 11%;
+    --sidebar-border: 265 20% 20%;
+    --sidebar-ring: 321 100% 72%;
+  }
+
+  /* ===== THEME: MATRIX ===== */
+  .theme-matrix {
+    --background: 0 0% 0%;
+    --foreground: 135 100% 50%;
+    --card: 120 50% 2%;
+    --card-foreground: 135 100% 50%;
+    --popover: 120 50% 2%;
+    --popover-foreground: 135 100% 50%;
+    --primary: 135 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 120 33% 4%;
+    --secondary-foreground: 135 100% 50%;
+    --muted: 120 33% 4%;
+    --muted-foreground: 120 100% 17%;
+    --accent: 135 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 135 100% 50%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 120 100% 7%;
+    --input: 120 100% 7%;
+    --ring: 135 100% 50%;
+    --radius: 0rem;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 135 100% 50%;
+    --sidebar-primary: 135 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 135 100% 50%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 120 100% 7%;
+    --sidebar-ring: 135 100% 50%;
+  }
 }
 
 @layer base {
@@ -100,4 +228,182 @@
     font-family: 'Inter', system-ui, sans-serif;
     @apply font-semibold tracking-tight;
   }
+}
+
+/* ===== THEME FONT OVERRIDES ===== */
+
+.theme-nostromo body,
+.theme-matrix body {
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.theme-nostromo h1, .theme-nostromo h2, .theme-nostromo h3, .theme-nostromo h4,
+.theme-matrix h1, .theme-matrix h2, .theme-matrix h3, .theme-matrix h4 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.theme-macintosh body,
+.theme-macintosh h1, .theme-macintosh h2, .theme-macintosh h3, .theme-macintosh h4 {
+  font-family: 'VT323', monospace;
+}
+
+.theme-macintosh body {
+  font-size: 18px;
+}
+
+.theme-vaporwave body {
+  font-family: 'Lexend Deca', sans-serif;
+}
+
+.theme-vaporwave h1, .theme-vaporwave h2, .theme-vaporwave h3, .theme-vaporwave h4 {
+  font-family: 'Major Mono Display', monospace;
+}
+
+/* ===== NOSTROMO EFFECTS ===== */
+
+.theme-nostromo label,
+.theme-nostromo button {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.theme-nostromo [class*="text-4xl"],
+.theme-nostromo [class*="text-5xl"],
+.theme-nostromo [class*="text-6xl"],
+.theme-nostromo [class*="tabular-nums"] {
+  text-shadow: 0 0 20px hsla(36, 49%, 56%, 0.3);
+}
+
+@keyframes crt-flicker {
+  0%, 97% { opacity: 1; }
+  97.5% { opacity: 0.85; }
+  98% { opacity: 1; }
+}
+
+.theme-nostromo #root {
+  animation: crt-flicker 8s infinite;
+}
+
+.theme-nostromo .card,
+.theme-nostromo [class*="bg-card"] {
+  border: 1px solid hsl(60 7% 11%);
+  box-shadow: none;
+}
+
+/* ===== MACINTOSH EFFECTS ===== */
+
+.theme-macintosh body {
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(45deg, #C0C0C0 25%, transparent 25%),
+    linear-gradient(-45deg, #C0C0C0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #C0C0C0 75%),
+    linear-gradient(-45deg, transparent 75%, #C0C0C0 75%);
+  background-size: 4px 4px;
+  background-position: 0 0, 0 2px, 2px -2px, -2px 0;
+}
+
+.theme-macintosh main {
+  background: white;
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 black;
+}
+
+.theme-macintosh header {
+  background: white !important;
+  backdrop-filter: none !important;
+  border-bottom: 2px solid black !important;
+}
+
+.theme-macintosh [class*="bg-card"] {
+  border: 2px solid black;
+  box-shadow: none;
+}
+
+.theme-macintosh button:active {
+  transform: translate(1px, 1px);
+}
+
+.theme-macintosh [class*="bg-primary"]:not([class*="foreground"]) {
+  border: 2px solid black;
+  box-shadow: 2px 2px 0 black;
+}
+
+.theme-macintosh [class*="bg-primary"]:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+/* ===== VAPORWAVE EFFECTS ===== */
+
+.theme-vaporwave h1,
+.theme-vaporwave h2,
+.theme-vaporwave h3 {
+  background: linear-gradient(135deg, #FF71CE 0%, #B967FF 50%, #01CDFE 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-vaporwave [class*="bg-card"]:not(button) {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.theme-vaporwave {
+  text-transform: lowercase;
+}
+
+.theme-vaporwave [class*="bg-primary"]:not([class*="foreground"]) {
+  background: linear-gradient(135deg, #FF71CE 0%, #B967FF 50%, #01CDFE 100%) !important;
+  color: white !important;
+}
+
+@keyframes vaporwave-drift {
+  0% { transform: translate(-50%, 0); }
+  100% { transform: translate(-50%, 30px); }
+}
+
+/* ===== MATRIX EFFECTS ===== */
+
+.theme-matrix h1, .theme-matrix h2, .theme-matrix h3,
+.theme-matrix [class*="text-4xl"],
+.theme-matrix [class*="text-5xl"],
+.theme-matrix [class*="text-6xl"],
+.theme-matrix [class*="tabular-nums"] {
+  text-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 0 40px rgba(0, 255, 65, 0.1);
+}
+
+.theme-matrix label,
+.theme-matrix button {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.theme-matrix .card,
+.theme-matrix [class*="bg-card"] {
+  border: 1px solid hsl(120 100% 7%);
+  box-shadow: none;
+}
+
+@keyframes matrix-scanline {
+  0% { top: -2px; }
+  100% { top: 100%; }
+}
+
+.theme-matrix main {
+  position: relative;
+}
+
+.theme-matrix main::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(0, 255, 65, 0.1);
+  animation: matrix-scanline 4s linear infinite;
+  pointer-events: none;
 }
