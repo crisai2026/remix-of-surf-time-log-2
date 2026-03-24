@@ -12,8 +12,9 @@ import { AlignmentSemana } from "@/components/AlignmentSemana";
 import { BarChart3, Clock, FolderOpen } from "lucide-react";
 import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { getThemeContent } from "@/lib/themeContent";
+import { ActivityLog } from "@/components/ActivityLog";
 
-type AppMode = "tracker" | "alignment";
+type AppMode = "tracker" | "alignment" | "log";
 type TrackerTab = "timer" | "dashboard" | "projects";
 type AlignmentTab = "ahora" | "semana";
 
