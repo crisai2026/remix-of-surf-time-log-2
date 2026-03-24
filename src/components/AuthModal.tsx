@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAppContext } from "@/contexts/AppContext";
+import { MareaLogo } from "@/components/MareaLogo";
 import { toast } from "sonner";
 
 export function AuthModal() {
@@ -40,12 +41,9 @@ export function AuthModal() {
       <DialogContent className="sm:max-w-md" style={{ backgroundColor: "#FAF9F6", border: "1px solid #E8E4DF" }}>
         <DialogHeader>
           <DialogTitle className="text-center">
-            {/* Marea logo small */}
-            <svg viewBox="0 0 60 32" className="mx-auto mb-2" style={{ width: 48, height: 26 }}>
-              <line x1="8" y1="8" x2="52" y2="8" stroke="#D97757" strokeWidth="2" strokeLinecap="round" opacity="0.25" />
-              <line x1="8" y1="16" x2="52" y2="16" stroke="#D97757" strokeWidth="3" strokeLinecap="round" opacity="0.55" />
-              <line x1="8" y1="24" x2="52" y2="24" stroke="#D97757" strokeWidth="4" strokeLinecap="round" opacity="1" />
-            </svg>
+            <div className="mx-auto mb-2 flex justify-center">
+              <MareaLogo width={48} height={26} />
+            </div>
             <span className="text-lg font-bold" style={{ color: "#1A1A1A" }}>Marea</span>
           </DialogTitle>
         </DialogHeader>
