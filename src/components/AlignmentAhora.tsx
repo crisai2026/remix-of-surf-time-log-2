@@ -391,6 +391,7 @@ export function AlignmentAhora() {
                 key={opt.category}
                 category={opt.category}
                 selected={activeCategory === opt.category}
+                projectColor={categoryColorMap[opt.category]}
                 className="rounded-xl p-3 cursor-pointer transition-all hover:shadow-sm"
               >
                 <button onClick={() => handleStartActivity(opt.category)} className="w-full text-left">
