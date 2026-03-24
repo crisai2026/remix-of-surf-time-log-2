@@ -1,37 +1,22 @@
 
 
-## Plan: Agregar autenticación y aislamiento de datos por usuario
+## Plan: Mejorar la página de Auth con branding y diseño atractivo
 
-### Qué se logra
-Cada persona podrá registrarse con email/contraseña, hacer login, y ver **solo sus propios** proyectos, tareas y registros de tiempo. Los datos de un usuario no serán visibles para otros.
+La página de login/registro actualmente es muy básica — solo un formulario blanco sin identidad. Vamos a hacerla más acogedora con el nombre de la app, una animación sutil y mejor diseño visual.
 
-### Cambios necesarios
+### Cambios en `src/pages/Auth.tsx`
 
-#### 1. Migración de base de datos
-Agregar columna `user_id` (referencia a `auth.users`) a las 4 tablas principales:
-- `projects` → `user_id uuid references auth.users(id) on delete cascade`
-- `tasks` → `user_id uuid` (heredado del proyecto, pero útil para filtrar directo)
-- `time_entries` → `user_id uuid references auth.users(id) on delete cascade`
-- `tags` → `user_id uuid references auth.users(id) on delete cascade`
-- `time_entry_tags` → (hereda seguridad vía las otras tablas)
+1. **Header con branding**: Agregar el nombre "Marea" grande con un ícono de ola (🌊) animado y un subtítulo descriptivo ("Tu tiempo, tu ritmo")
 
-Reemplazar todas las políticas RLS públicas por políticas que filtren por `auth.uid()`:
-```sql
--- Ejemplo para projects:
-DROP POLICY "Public read projects" ON projects;
-CREATE POLICY "Users read own projects" ON projects
-  FOR SELECT USING (auth.uid() = user_id);
--- Similar para INSERT, UPDATE, DELETE en cada tabla
-```
+2. **Gradiente de fondo**: Un fondo con gradiente sutil usando los colores del tema (tonos azul/teal que evocan "marea")
 
-Hacer que `user_id` se asigne automáticamente con `DEFAULT auth.uid()`.
+3. **Animación de entrada**: El card del formulario aparece con una animación fade-in + slide-up suave usando CSS
 
-#### 2. Página de autenticación (Login/Signup)
-- Crear `src/pages/Auth.tsx` con formulario de login y registro por email/contraseña
-- Agregar ruta `/auth` en `App.tsx`
-- Crear contexto de auth o usar hook que escuche `onAuthStateChange`
-- Redirigir a `/auth` si no hay sesión activa
-- Incluir botón de logout en la interfaz principal
+4. **Footer decorativo**: Un texto pequeño al pie ("Built with focus ✦") consistente con el footer de la app principal
 
-#### 3. Actualizar queries del frontend
-- No se necesitan cambios en los hooks (`
+5. **Visual polish**: Bordes más suaves en el card, sombra más pronunciada, mejor espaciado
+
+### Archivo a modificar
+- `src/pages/Auth.tsx` — rediseño completo del layout
+- `src/index.css` — agregar keyframe para animación de entrada (si no existe)
+
