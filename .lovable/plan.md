@@ -1,18 +1,36 @@
 
 
-## Plan: Simplify motor section in AlignmentSemana
+## Plan: Add "Log" View to MAREA
 
-### File: `src/components/AlignmentSemana.tsx`
+### Summary
+Add a third top-level navigation option "Log" alongside "Tracker" and "Alignment". The Log view shows a chronological list of all time entries, with filters and day-grouped layout.
 
-**Remove:** The "Motor summary cards" grid (lines 289–303).
+### Changes
 
-**Replace:** The dual-bar "Por motor — plan vs real" section (lines 255–287) with a single progress bar per motor:
-- Bar background = full width (represents `goalHours` = 100%)
-- Filled portion = `actualHours / goalHours` percentage, colored with `m.color`
-- Right-aligned text: `{actualHours}h / {goalHours}h · {pct}%`
-- Goal source: `mp.weekly_goal_hours` from DB (already used in `motorData` as `goalHours`)
-- Remove `plannedHours` from the display (no longer needed)
-- Title changes to "Por motor — progreso semanal"
+**1. `src/pages/Index.tsx`** — Add "Log" mode
+- Extend `AppMode` type: `"tracker" | "alignment" | "log"`
+- Add third button "Log" to the top-level toggle
+- Render `<ActivityLog />` when `mode === "log"`
+- No sub-navigation needed for Log mode
 
-No other files or sections touched.
+**2. `src/components/ActivityLog.tsx`** — New file
+- **Data**: Query `time_entries` with `projects(*)` join from Supabase, filtered by selected time period
+- **Filters row**: Horizontal pills for time period ("Hoy", "Esta semana", "Este mes", "Todo" — default "Esta semana") + category dropdown with color dots (default "Todas")
+- **Grouping**: Group entries by NZ date, sorted most recent day first. Within each day, sort by `start_time` ascending
+- **Day header**: Full date in Spanish (e.g. "Lunes 24 de Marzo") with total hours on the right
+- **Entry row**: Color dot (from `project.color`), project name, time range, duration, optional "fuera de plan" badge, optional planned category mismatch text
+- **Empty state**: "Sin registros" with muted icon
+- **Time formatting**: Reuse existing `formatTime`, `toNZDate`, `nzMidnightToUTC` utilities
+- **Date range calculation**: "Hoy" = today NZ, "Esta semana" = current week Mon-Sun, "Este mes" = 1st of month to end, "Todo" = no filter
+
+### Technical details
+- Time period filter controls the Supabase query's `gte`/`lt` on `start_time` (converted to UTC via `nzMidnightToUTC`)
+- Category filter is client-side on the fetched data (filter by `project_id`)
+- Day grouping uses `toNZDate()` to bucket entries
+- Spanish day/month names via `toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long", timeZone: "Pacific/Auckland" })`
+- Duration display uses existing `formatDuration`
+
+### Files
+1. `src/pages/Index.tsx` — modify (add Log mode + toggle button)
+2. `src/components/ActivityLog.tsx` — create new
 
