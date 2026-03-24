@@ -25,7 +25,7 @@ export function NotificationSettings() {
       <button
         onClick={() => setShowMenu(!showMenu)}
         className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
-        title="Notificaciones"
+        title="Notifications"
       >
         {settings.enabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
       </button>
@@ -35,7 +35,7 @@ export function NotificationSettings() {
           <div className="fixed inset-0 z-20" onClick={() => setShowMenu(false)} />
           <div className="absolute right-0 top-full mt-2 z-30 bg-card border border-border rounded-lg shadow-lg p-4 w-56 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Recordatorios</span>
+              <span className="text-sm font-medium text-foreground">Reminders</span>
               <button
                 onClick={handleToggle}
                 className={`relative w-9 h-5 rounded-full transition-colors ${
@@ -52,7 +52,7 @@ export function NotificationSettings() {
 
             {settings.enabled && (
               <div className="space-y-2">
-                <span className="text-xs text-muted-foreground">Avisar si no registro en:</span>
+                <span className="text-xs text-muted-foreground">Alert if no entry in:</span>
                 <div className="flex gap-1.5">
                   {INTERVAL_OPTIONS.map((h) => (
                     <button
