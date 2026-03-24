@@ -31,7 +31,7 @@ export const ACTIVITY_OPTIONS = [
   { label: "Jobhunt", category: "jobhunt", motor: 1 },
   { label: "Proyectos", category: "proyectos", motor: 3 },
   { label: "Aprender AI", category: "ai", motor: 2 },
-  { label: "Familia", category: "familia" },
+  { label: "Familia", category: "familia", motor: 4 },
   { label: "Whanau Support", category: "whanau" },
   { label: "Tarde hijas", category: "hijas" },
 ];
