@@ -62,7 +62,7 @@ export default function Auth() {
           <h1 className="text-4xl font-bold tracking-tight text-foreground">Marea</h1>
         </div>
         <p className="text-muted-foreground text-sm">Mide lo que importa</p>
-        <p className="text-muted-foreground/70 text-xs max-w-xs text-center mx-auto mt-2 leading-relaxed">
+        <p className="text-muted-foreground/70 text-xs max-w-xs text-center mx-auto mt-2 leading-relaxed animate-fade-in" style={{ animationDelay: "400ms", animationFillMode: "backwards" }}>
           Hecha por mentes neurodivergentes para todo el mundo. Marea te ayuda a visualizar y elimina la fricción entre lo que haces y lo que quieres hacer — para que cambiar de tarea no sea una batalla, sino una ola.
         </p>
       </div>
