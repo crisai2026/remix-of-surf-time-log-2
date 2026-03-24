@@ -9,8 +9,9 @@ import { NotificationSettings } from "@/components/NotificationSettings";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { AlignmentAhora } from "@/components/AlignmentAhora";
 import { AlignmentSemana } from "@/components/AlignmentSemana";
-import { BarChart3, Clock, FolderOpen } from "lucide-react";
+import { BarChart3, Clock, FolderOpen, LogOut } from "lucide-react";
 import { useVisualTheme } from "@/hooks/useVisualTheme";
+import { useAuth } from "@/hooks/useAuth";
 import { getThemeContent } from "@/lib/themeContent";
 import { ActivityLog } from "@/components/ActivityLog";
 
@@ -24,6 +25,7 @@ export default function Index() {
   const [alignmentTab, setAlignmentTab] = useState<AlignmentTab>("ahora");
   const { visualTheme } = useVisualTheme();
   const content = getThemeContent(visualTheme);
+  const { signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-background pb-14">
@@ -120,6 +122,13 @@ export default function Index() {
         <div className="max-w-xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
           <ThemeToggle />
           <NotificationSettings />
+          <button
+            onClick={signOut}
+            title="Cerrar sesión"
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
           <span className="text-[11px] text-muted-foreground ml-2">Built with focus ✦</span>
         </div>
       </div>
