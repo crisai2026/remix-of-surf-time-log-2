@@ -84,6 +84,17 @@ export function AlignmentSemana() {
       .sort((a, b) => (a.motor_number || 0) - (b.motor_number || 0));
   }, [projects]);
 
+  // Build category → DB color lookup
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (!projects) return map;
+    for (const p of projects) {
+      const cat = getProjectCategory(p.name);
+      if (cat) map[cat] = p.color;
+    }
+    return map;
+  }, [projects]);
+
   // Calculate alignment per day using motor projects
   const dayAlignments = useMemo(() => {
     if (!weekEntries || motorProjects.length === 0) return [];
@@ -137,7 +148,6 @@ export function AlignmentSemana() {
       const plannedHours = +(plannedMin / 60).toFixed(1);
       const goalHours = (mp.weekly_goal_hours as number) || 0;
 
-      const style = cat ? CATEGORY_STYLES[cat] : null;
       return {
         motor: mp.motor_number,
         label: `${mp.motor_number} · ${mp.name}`,
@@ -145,9 +155,9 @@ export function AlignmentSemana() {
         plannedHours,
         goalHours,
         pct: goalHours > 0 ? Math.min((actualHours / goalHours) * 100, 100) : 0,
-        color: style?.textColor || mp.color,
-        lightBg: style?.lightBg || "hsl(var(--secondary))",
-        darkBg: style?.darkBg || "hsl(var(--secondary))",
+        color: mp.color,
+        lightBg: `${mp.color}15`,
+        darkBg: `${mp.color}20`,
       };
     });
   }, [weekEntries, motorProjects]);
@@ -177,13 +187,19 @@ export function AlignmentSemana() {
         matchStatus = Math.abs(actualMin - plannedMin) <= 20 ? "match" : "partial";
       }
 
-      const style = CATEGORY_STYLES[block.category];
+      const fallbackStyle = CATEGORY_STYLES[block.category];
+      const dbColor = categoryColorMap[block.category];
+      const resolvedStyle = {
+        textColor: dbColor || fallbackStyle?.textColor,
+        lightBg: dbColor ? `${dbColor}15` : fallbackStyle?.lightBg,
+        darkBg: dbColor ? `${dbColor}20` : fallbackStyle?.darkBg,
+      };
       return {
         block,
         actualMin: Math.round(actualMin),
         plannedMin,
         matchStatus,
-        style,
+        style: resolvedStyle,
       };
     });
   }, [selectedDay, weekEntries, weekDates]);

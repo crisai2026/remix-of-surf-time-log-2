@@ -31,16 +31,22 @@ function useDarkMode() {
   return document.documentElement.classList.contains("dark");
 }
 
-function CategoryBg({ category, children, className = "", selected = false }: {
-  category: string; children: React.ReactNode; className?: string; selected?: boolean;
+function CategoryBg({ category, children, className = "", selected = false, projectColor }: {
+  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string;
 }) {
   const dark = useDarkMode();
   const style = CATEGORY_STYLES[category];
-  if (!style) return <div className={className}>{children}</div>;
+  const color = projectColor || style?.textColor;
+  if (!color && !style) return <div className={className}>{children}</div>;
   return (
     <div
       className={`${className} ${selected ? "ring-2 ring-primary shadow-md" : ""}`}
-      style={{ backgroundColor: dark ? style.darkBg : style.lightBg, color: style.textColor }}
+      style={{
+        backgroundColor: projectColor
+          ? (dark ? `${projectColor}20` : `${projectColor}15`)
+          : (dark ? style?.darkBg : style?.lightBg),
+        color: color,
+      }}
     >
       {children}
     </div>
@@ -75,6 +81,17 @@ export function AlignmentAhora() {
   const dayIndex = getCurrentDayIndex();
   const dayName = getDayName(dayIndex);
   const today = new Date();
+
+  // Build category → DB project color lookup
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (!projects) return map;
+    for (const p of projects) {
+      const cat = getProjectCategory(p.name);
+      if (cat) map[cat] = p.color;
+    }
+    return map;
+  }, [projects]);
 
   // Derive active category from running entry (case-insensitive)
   const activeCategory = useMemo(() => {
@@ -196,7 +213,9 @@ export function AlignmentAhora() {
     setOutOfPlanText("");
   };
 
+  const dbColor = displayCategory ? categoryColorMap[displayCategory] : null;
   const style = isOutOfPlan ? null : (displayCategory ? CATEGORY_STYLES[displayCategory] : null);
+  const activeColor = dbColor || style?.textColor || null;
   const dark = useDarkMode();
   const nowMin = today.getHours() * 60 + today.getMinutes();
 
@@ -219,7 +238,7 @@ export function AlignmentAhora() {
         style={{
           backgroundColor: isOutOfPlan
             ? "hsl(var(--card))"
-            : style ? (dark ? style.darkBg : style.lightBg) : "hsl(var(--card))",
+            : activeColor ? (dark ? `${activeColor}20` : `${activeColor}15`) : "hsl(var(--card))",
         }}
       >
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-3">
@@ -228,13 +247,13 @@ export function AlignmentAhora() {
 
         <h3
           className="text-xl font-bold mb-1"
-          style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontFamily: "'DM Serif Display', serif" }}
+          style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (activeColor || "hsl(var(--foreground))"), fontFamily: "'DM Serif Display', serif" }}
         >
           {displayActivity}
         </h3>
 
         {currentBlock && !isOutOfPlan && (
-          <p className="text-xs mb-2" style={{ color: style?.textColor || "hsl(var(--muted-foreground))", opacity: 0.7 }}>
+          <p className="text-xs mb-2" style={{ color: activeColor || "hsl(var(--muted-foreground))", opacity: 0.7 }}>
             {currentBlock.start} – {currentBlock.end}
           </p>
         )}
@@ -242,7 +261,7 @@ export function AlignmentAhora() {
         {!isOutOfPlan && style?.motorLabel && (
           <span
             className="inline-block text-[10px] px-2 py-0.5 rounded-full mb-2"
-            style={{ backgroundColor: dark ? style.darkBg : style.lightBg, color: style.textColor, border: `1px solid ${style.textColor}20` }}
+            style={{ backgroundColor: dark ? `${activeColor}20` : `${activeColor}15`, color: activeColor, border: `1px solid ${activeColor}20` }}
           >
             {style.motorLabel}
           </span>
@@ -258,7 +277,7 @@ export function AlignmentAhora() {
           <div>
             <span
               className={`text-3xl tabular-nums ${isPaused ? "opacity-50" : ""}`}
-              style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontWeight: 300 }}
+              style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (activeColor || "hsl(var(--foreground))"), fontWeight: 300 }}
             >
               {formatTimer(elapsed)}
             </span>
@@ -308,7 +327,7 @@ export function AlignmentAhora() {
       {/* Next block */}
       {nextBlock && (
         <div className="rounded-xl bg-secondary/50 border border-border p-3 flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Siguiente</p>
             <p className="text-sm font-medium truncate">{nextBlock.activity}</p>
@@ -338,7 +357,7 @@ export function AlignmentAhora() {
                 >
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
+                    style={{ backgroundColor: categoryColorMap[block.category] || CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
                   />
                   <span className={`flex-1 truncate ${isDone ? "line-through" : ""} ${isActive ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                     {block.activity}
@@ -372,6 +391,7 @@ export function AlignmentAhora() {
                 key={opt.category}
                 category={opt.category}
                 selected={activeCategory === opt.category}
+                projectColor={categoryColorMap[opt.category]}
                 className="rounded-xl p-3 cursor-pointer transition-all hover:shadow-sm"
               >
                 <button onClick={() => handleStartActivity(opt.category)} className="w-full text-left">
