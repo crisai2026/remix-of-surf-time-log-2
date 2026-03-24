@@ -71,7 +71,7 @@ export const WEEKLY_PLAN: PlanBlock[][] = [
     { start: "07:15", end: "08:30", activity: "Despertar/desayuno", category: "rutina" },
     { start: "08:30", end: "09:00", activity: "Ordenar", category: "rutina" },
     { start: "09:00", end: "09:30", activity: "Buffer", category: "buffer" },
-    { start: "09:30", end: "11:30", activity: "Reunión hermanos", category: "familia" },
+    { start: "09:30", end: "11:30", activity: "Reunión hermanos", category: "familia", motor: 4 },
     { start: "12:00", end: "13:30", activity: "Proyectos", category: "proyectos", motor: 3 },
     { start: "13:45", end: "14:30", activity: "Aprender AI", category: "ai", motor: 2 },
     { start: "15:00", end: "17:30", activity: "Tarde hijas", category: "hijas" },
