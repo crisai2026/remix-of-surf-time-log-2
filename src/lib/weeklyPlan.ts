@@ -20,7 +20,7 @@ export const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   jobhunt:   { textColor: "#3C3489", lightBg: "#EEEDFE", darkBg: "#2A2854", motorLabel: "Motor 1 · Cash" },
   proyectos: { textColor: "#96680A", lightBg: "#FAEEDA", darkBg: "#3A2E10", motorLabel: "Motor 3 · Proyectos" },
   ai:        { textColor: "#0C447C", lightBg: "#E6F1FB", darkBg: "#152840", motorLabel: "Motor 2 · AI" },
-  familia:   { textColor: "#72243E", lightBg: "#FBEAF0", darkBg: "#3A1828" },
+  familia:   { textColor: "#72243E", lightBg: "#FBEAF0", darkBg: "#3A1828", motorLabel: "Motor 4 · Familia" },
   whanau:    { textColor: "#2C2C2A", lightBg: "#D3D1C7", darkBg: "#34332E" },
   hijas:     { textColor: "#4B1528", lightBg: "#F4C0D1", darkBg: "#3A1828" },
   rutina:    { textColor: "#777777", lightBg: "#EDEBE8", darkBg: "#2A2724" },
