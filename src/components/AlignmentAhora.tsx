@@ -277,7 +277,7 @@ export function AlignmentAhora() {
           <div>
             <span
               className={`text-3xl tabular-nums ${isPaused ? "opacity-50" : ""}`}
-              style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontWeight: 300 }}
+              style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (activeColor || "hsl(var(--foreground))"), fontWeight: 300 }}
             >
               {formatTimer(elapsed)}
             </span>
