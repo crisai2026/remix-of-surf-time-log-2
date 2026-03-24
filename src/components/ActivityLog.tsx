@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toNZDate, nzMidnightToUTC, todayISO, getWeekDates, formatTime, formatDuration } from "@/lib/formatTime";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Pencil, Trash2 } from "lucide-react";
+import { useDeleteEntry } from "@/lib/hooks/useTimeEntries";
+import { EditEntryDialog } from "@/components/EditEntryDialog";
+import { toast } from "sonner";
 
 type TimePeriod = "hoy" | "semana" | "mes" | "todo";
 
