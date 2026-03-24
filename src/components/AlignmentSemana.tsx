@@ -252,54 +252,27 @@ export function AlignmentSemana() {
         ))}
       </div>
 
-      {/* Motor comparison bars */}
+      {/* Motor progress */}
       <div className="rounded-xl bg-card border border-border p-3">
-        <h3 className="text-xs font-semibold mb-3">Por motor — plan vs real</h3>
+        <h3 className="text-xs font-semibold mb-3">Por motor — progreso semanal</h3>
         <div className="space-y-3">
-          {motorData.map(m => {
-            const maxH = Math.max(m.plannedHours, m.actualHours, 0.1);
-            return (
-              <div key={m.motor}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium">{m.label}</span>
-                  <span className="text-[10px] text-muted-foreground tabular-nums">
-                    {m.actualHours}h / {m.plannedHours}h plan
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all opacity-30"
-                      style={{ width: `${(m.plannedHours / maxH) * 100}%`, backgroundColor: m.color }}
-                    />
-                  </div>
-                  <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${(m.actualHours / maxH) * 100}%`, backgroundColor: m.color }}
-                    />
-                  </div>
-                </div>
+          {motorData.map(m => (
+            <div key={m.motor}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-medium">{m.label}</span>
+                <span className="text-[10px] text-muted-foreground tabular-nums">
+                  {m.actualHours}h / {m.goalHours}h · {Math.round(m.pct)}%
+                </span>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Motor summary cards */}
-      <div className="grid grid-cols-3 gap-2">
-        {motorData.map(m => (
-          <div key={m.motor} className="rounded-xl border border-border p-2.5 text-center" style={{ backgroundColor: dark ? m.darkBg : m.lightBg }}>
-            <p className="text-[10px] font-medium truncate" style={{ color: m.color }}>{m.label}</p>
-            <p className="text-sm font-semibold tabular-nums mt-0.5" style={{ color: m.color }}>
-              {m.actualHours}h
-              <span className="text-[10px] font-normal opacity-60">/{m.goalHours}h</span>
-            </p>
-            <div className="h-1 rounded-full bg-secondary/50 overflow-hidden mt-1.5">
-              <div className="h-full rounded-full transition-all" style={{ width: `${m.pct}%`, backgroundColor: m.color }} />
+              <div className="h-2 rounded-full bg-secondary overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${m.pct}%`, backgroundColor: m.color }}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Day detail */}
