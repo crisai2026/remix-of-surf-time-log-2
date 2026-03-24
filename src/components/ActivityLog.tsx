@@ -54,6 +54,8 @@ function formatDayHeader(dateStr: string): string {
 export function ActivityLog() {
   const [period, setPeriod] = useState<TimePeriod>("semana");
   const [categoryFilter, setCategoryFilter] = useState<string>("todas");
+  const [editEntry, setEditEntry] = useState<any>(null);
+  const deleteEntry = useDeleteEntry();
 
   const range = useMemo(() => getDateRange(period), [period]);
 
