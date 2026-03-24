@@ -47,7 +47,7 @@ export function WeeklyTrendChart({ weeks }: Props) {
         {yTicks.map((v, i) => (
           <g key={i}>
             <line x1={padL} x2={chartW - padR} y1={toY(v)} y2={toY(v)} stroke="hsl(var(--border))" strokeWidth={0.5} />
-            <text x={padL - 6} y={toY(v) + 3} textAnchor="end" className="fill-muted-foreground" fontSize={9}>{v}</text>
+            
           </g>
         ))}
 

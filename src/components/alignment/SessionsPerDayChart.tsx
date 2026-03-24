@@ -55,10 +55,6 @@ export function SessionsPerDayChart({ planned, actual, todayDayIndex }: Props) {
         {gridLines.map((g, i) => (
           <line key={i} x1={padL} x2={chartW - padR} y1={g.y} y2={g.y} stroke="hsl(var(--border))" strokeWidth={0.5} />
         ))}
-        {/* Y labels */}
-        {gridLines.map((g, i) => (
-          <text key={i} x={padL - 6} y={g.y + 3} textAnchor="end" className="fill-muted-foreground" fontSize={9}>{g.label}</text>
-        ))}
 
         {/* Area fill */}
         {areaPath && <path d={areaPath} fill="hsl(var(--primary))" opacity={0.06} />}

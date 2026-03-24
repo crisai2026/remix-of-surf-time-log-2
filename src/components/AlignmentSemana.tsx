@@ -240,13 +240,19 @@ export function AlignmentSemana() {
         const pName = (e.projects as any)?.name?.toLowerCase();
         return d >= weekStart && d <= weekEnd && pName && motorNames.has(pName);
       }).length;
-      weeks.push({
-        label: offset === 0 ? "Esta sem" : `Sem ${4 + offset}`,
-        sessions,
-        isCurrent: offset === 0,
-      });
+      if (sessions > 0 || offset === 0) {
+        const labels: Record<number, string> = { '-3': 'Hace 3 sem', '-2': 'Hace 2 sem', '-1': 'Sem pasada', '0': 'Esta sem' };
+        weeks.push({
+          label: labels[String(offset) as keyof typeof labels] || `Sem ${4 + offset}`,
+          sessions,
+          isCurrent: offset === 0,
+        });
+      }
     }
-    return weeks;
+    // Filter: only include weeks with sessions, but always keep current week
+    // If current week has 0 sessions and it's the only one, still show it
+    const filtered = weeks.filter(w => w.sessions > 0 || w.isCurrent);
+    return filtered.slice(-4);
   }, [trendEntries, motorProjects, projects]);
 
   // --- DAY DETAIL ---
