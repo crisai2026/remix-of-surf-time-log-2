@@ -61,6 +61,10 @@ export function AlignmentSemana() {
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
   const todayStr = todayISO();
+  const todayDayIndex = useMemo(() => {
+    const idx = weekDates.findIndex(d => d === todayStr);
+    return idx >= 0 && idx < 5 ? idx : 4;
+  }, [weekDates, todayStr]);
 
   const { data: weekEntries } = useQuery({
     queryKey: ["alignment_week_entries", weekDates[0]],
@@ -278,7 +282,7 @@ export function AlignmentSemana() {
   const dayAbbrs = ["Lun", "Mar", "Mié", "Jue", "Vie"];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2.5">
       {/* 1. TWO HERO METRICS */}
       <div className="grid grid-cols-2 gap-4 py-4">
         {/* Sessions */}
@@ -341,11 +345,11 @@ export function AlignmentSemana() {
         ))}
       </div>
 
-      {/* 3. SESSIONS PER DAY CHART */}
-      <SessionsPerDayChart planned={plannedSessionsPerDay} actual={actualSessionsPerDay} />
-
-      {/* 4. WEEKLY TREND */}
-      {weeklyTrend.length > 0 && <WeeklyTrendChart weeks={weeklyTrend} />}
+      {/* 3+4. CHARTS SIDE BY SIDE */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <SessionsPerDayChart planned={plannedSessionsPerDay} actual={actualSessionsPerDay} todayDayIndex={todayDayIndex} />
+        {weeklyTrend.length > 0 && <WeeklyTrendChart weeks={weeklyTrend} />}
+      </div>
 
       {/* 5. MOTOR NEGLECTED ALERT */}
       <MotorAlert motors={motorData.map(m => ({ label: m.label, actualHours: m.actualHours, goalHours: m.goalHours, pct: m.pct }))} />
@@ -363,8 +367,8 @@ export function AlignmentSemana() {
                     {m.actualHours}h / {m.goalHours}h · {Math.round(m.pct)}%
                   </span>
                 </div>
-                <div className="h-3 rounded-md overflow-hidden" style={{ backgroundColor: m.lightBg }}>
-                  <div className="h-full rounded-md transition-all" style={{ width: `${m.pct}%`, backgroundColor: m.color }} />
+                <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: m.lightBg }}>
+                  <div className="h-full rounded-sm transition-all" style={{ width: `${m.pct}%`, backgroundColor: m.color }} />
                 </div>
               </div>
             ))}
