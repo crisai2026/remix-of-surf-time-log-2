@@ -3,19 +3,18 @@ import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects } from "@/lib/hooks/useProjects";
-import { formatDuration, getWeekDatesForOffset } from "@/lib/formatTime";
+import { formatDuration, getWeekDatesForOffset, todayISO, toNZDate, nzMidnightToUTC } from "@/lib/formatTime";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie, CartesianGrid,
 } from "recharts";
 import { Flame, Clock, TrendingUp, ChevronLeft, ChevronRight, Activity, Pencil } from "lucide-react";
 
-// Motors are now dynamic from DB (motor_number column on projects)
-
 export function DashboardCharts() {
   const { data: projects } = useProjects();
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedBarDay, setSelectedBarDay] = useState<string | null>(null);
   const [editEntry, setEditEntry] = useState<any>(null);
 
   const weekDates = useMemo(() => getWeekDatesForOffset(weekOffset), [weekOffset]);
@@ -25,11 +24,17 @@ export function DashboardCharts() {
   const { data: weekEntries } = useQuery({
     queryKey: ["week_entries", weekStart],
     queryFn: async () => {
+      const startUTC = nzMidnightToUTC(weekStart);
+      // Day after weekEnd
+      const endDate = new Date(new Date(weekEnd + "T12:00:00").getTime());
+      endDate.setDate(endDate.getDate() + 1);
+      const endDateStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
+      const endUTC = nzMidnightToUTC(endDateStr);
       const { data, error } = await supabase
         .from("time_entries")
         .select("*, projects(*)")
-        .gte("start_time", `${weekStart}T00:00:00`)
-        .lte("start_time", `${weekEnd}T23:59:59`)
+        .gte("start_time", startUTC)
+        .lt("start_time", endUTC)
         .eq("is_running", false);
       if (error) throw error;
       return data;
@@ -46,13 +51,15 @@ export function DashboardCharts() {
         .order("start_time", { ascending: false })
         .limit(100);
       if (error) throw error;
-      const uniqueDays = new Set(data?.map(e => e.start_time.split("T")[0]));
+      const uniqueDays = new Set(data?.map(e => toNZDate(e.start_time)));
       let streak = 0;
-      const today = new Date();
+      const today = todayISO();
+      const [y, m, d] = today.split("-").map(Number);
+      const base = new Date(y, m - 1, d);
       for (let i = 0; i < 60; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        const key = d.toISOString().split("T")[0];
+        const dt = new Date(base);
+        dt.setDate(base.getDate() - i);
+        const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
         if (uniqueDays.has(key)) streak++;
         else if (i > 0) break;
       }
@@ -75,6 +82,8 @@ export function DashboardCharts() {
     },
   });
 
+  const todayStr = todayISO();
+
   const projectData = useMemo(() =>
     projects?.map((p) => {
       const totalSec = weekEntries
@@ -86,24 +95,23 @@ export function DashboardCharts() {
   );
 
   const dailyData = useMemo(() => weekDates.map((date) => {
-    const dayEntries = weekEntries?.filter((e) => e.start_time.startsWith(date));
+    const dayEntries = weekEntries?.filter((e) => toNZDate(e.start_time) === date);
     const totalSec = dayEntries?.reduce((sum, e) => sum + (e.duration_seconds || 0), 0) || 0;
     const d = new Date(date + "T12:00:00");
     return {
       day: d.toLocaleDateString("es-CL", { weekday: "short" }),
       date,
       hours: +(totalSec / 3600).toFixed(1),
-      isToday: date === new Date().toISOString().split("T")[0],
+      isToday: date === todayStr,
     };
-  }), [weekDates, weekEntries]);
+  }), [weekDates, weekEntries, todayStr]);
 
   const weekTotal = weekEntries?.reduce((s, e) => s + (e.duration_seconds || 0), 0) || 0;
-  const todayStr = new Date().toISOString().split("T")[0];
   const todayTotal = weekEntries
-    ?.filter((e) => e.start_time.startsWith(todayStr))
+    ?.filter((e) => toNZDate(e.start_time) === todayStr)
     .reduce((s, e) => s + (e.duration_seconds || 0), 0) || 0;
 
-  const daysWithData = weekDates.filter(d => weekEntries?.some(e => e.start_time.startsWith(d))).length;
+  const daysWithData = weekDates.filter(d => weekEntries?.some(e => toNZDate(e.start_time) === d)).length;
   const avgDaily = daysWithData > 0 ? Math.round(weekTotal / daysWithData) : 0;
 
   const streakLabel = (streakData || 0) === 1 ? "1 día" : `${streakData || 0} días`;
@@ -117,8 +125,8 @@ export function DashboardCharts() {
   const motorGoalData = useMemo(() => {
     if (!projects) return [];
     return projects
-      .filter(p => (p as any).motor_number != null)
-      .sort((a, b) => ((a as any).motor_number || 0) - ((b as any).motor_number || 0))
+      .filter(p => p.motor_number != null)
+      .sort((a, b) => (a.motor_number || 0) - (b.motor_number || 0))
       .map(p => {
         const totalSec = weekEntries
           ?.filter(e => e.project_id === p.id)
@@ -127,8 +135,7 @@ export function DashboardCharts() {
         const goal = (p.weekly_goal_hours as number) || 0;
         const pct = goal > 0 ? Math.min((hours / goal) * 100, 100) : 0;
         return {
-          label: `Motor ${(p as any).motor_number}`,
-          projectName: p.name,
+          label: `${p.motor_number} · ${p.name}`,
           hours,
           color: p.color,
           goal,
@@ -140,14 +147,15 @@ export function DashboardCharts() {
   // Heatmap grid
   const heatmapGrid = useMemo(() => {
     const weeks: { date: string; hours: number }[][] = [];
-    const today = new Date();
-    const startDay = new Date(today);
-    const dow = (startDay.getDay() + 6) % 7;
-    startDay.setDate(startDay.getDate() - dow - 77);
+    const [ty, tm, td] = todayStr.split("-").map(Number);
+    const todayLocal = new Date(ty, tm - 1, td);
+    const dow = (todayLocal.getDay() + 6) % 7;
+    const startDay = new Date(todayLocal);
+    startDay.setDate(todayLocal.getDate() - dow - 77);
 
     const dayMap = new Map<string, number>();
     heatmapEntries?.forEach(e => {
-      const day = e.start_time.split("T")[0];
+      const day = toNZDate(e.start_time);
       dayMap.set(day, (dayMap.get(day) || 0) + (e.duration_seconds || 0));
     });
 
@@ -156,13 +164,13 @@ export function DashboardCharts() {
       for (let d = 0; d < 7; d++) {
         const dt = new Date(startDay);
         dt.setDate(startDay.getDate() + w * 7 + d);
-        const key = dt.toISOString().split("T")[0];
+        const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
         week.push({ date: key, hours: +((dayMap.get(key) || 0) / 3600).toFixed(1) });
       }
       weeks.push(week);
     }
     return weeks;
-  }, [heatmapEntries]);
+  }, [heatmapEntries, todayStr]);
 
   const maxHeatmapHours = useMemo(() => {
     let max = 0;
@@ -172,7 +180,7 @@ export function DashboardCharts() {
 
   const selectedDayBreakdown = useMemo(() => {
     if (!selectedDay || !heatmapEntries) return [];
-    const dayEntries = heatmapEntries.filter(e => e.start_time.startsWith(selectedDay));
+    const dayEntries = heatmapEntries.filter(e => toNZDate(e.start_time) === selectedDay);
     const byProject = new Map<string, { name: string; color: string; seconds: number }>();
     dayEntries.forEach(e => {
       const pid = e.project_id;
@@ -190,11 +198,19 @@ export function DashboardCharts() {
     return Array.from(byProject.values()).sort((a, b) => b.seconds - a.seconds);
   }, [selectedDay, heatmapEntries]);
 
+  // Bar chart day entries (Bug 2 — clickable bars show any day's entries)
+  const barDayEntries = useMemo(() => {
+    if (!selectedBarDay || !weekEntries) return [];
+    return weekEntries
+      .filter(e => toNZDate(e.start_time) === selectedBarDay)
+      .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+  }, [selectedBarDay, weekEntries]);
+
   // Today's entries
   const todayEntries = useMemo(() => {
     if (!weekEntries) return [];
     return weekEntries
-      .filter(e => e.start_time.startsWith(todayStr))
+      .filter(e => toNZDate(e.start_time) === todayStr)
       .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
   }, [weekEntries, todayStr]);
 
@@ -239,7 +255,6 @@ export function DashboardCharts() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color }} />
                   <span className="text-xs font-medium flex-1 truncate">{m.label}</span>
-                  <span className="text-[10px] text-muted-foreground">{m.projectName}</span>
                   <span className="text-xs tabular-nums font-medium ml-1">
                     {m.hours > 0 ? `${m.hours}h` : "—"}
                     {m.goal > 0 && <span className="text-muted-foreground font-normal">/{m.goal}h</span>}
@@ -295,18 +310,44 @@ export function DashboardCharts() {
         <div className="rounded-xl bg-card border border-border p-3">
           <h3 className="text-xs font-semibold mb-2">Semana</h3>
           <ResponsiveContainer width="100%" height={110}>
-            <BarChart data={dailyData}>
+            <BarChart data={dailyData} onClick={(state) => {
+              if (state?.activePayload?.[0]) {
+                const date = state.activePayload[0].payload.date;
+                setSelectedBarDay(selectedBarDay === date ? null : date);
+              }
+            }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis hide axisLine={false} tickLine={false} width={0} />
               <Tooltip formatter={(value: number) => [`${value}h`, ""]} contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))", color: "hsl(var(--foreground))", fontSize: 11 }} />
-              <Bar dataKey="hours" radius={[3, 3, 0, 0]}>
+              <Bar dataKey="hours" radius={[3, 3, 0, 0]} cursor="pointer">
                 {dailyData.map((entry, i) => (
-                  <Cell key={i} fill="hsl(16, 65%, 60%)" opacity={entry.isToday ? 1 : 0.4} />
+                  <Cell key={i} fill="hsl(16, 65%, 60%)" opacity={entry.date === selectedBarDay ? 1 : entry.isToday ? 0.8 : 0.4} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+
+          {/* Bar day detail (Bug 2) */}
+          {selectedBarDay && barDayEntries.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-border">
+              <p className="text-[10px] text-muted-foreground mb-1">
+                {new Date(selectedBarDay + "T12:00:00").toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "short" })}
+              </p>
+              <div className="space-y-0.5">
+                {barDayEntries.map(e => (
+                  <div key={e.id} className="group flex items-center gap-1.5 text-[10px] py-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: (e.projects as any)?.color || "hsl(var(--primary))" }} />
+                    <span className="flex-1 truncate text-muted-foreground">{e.description || (e.projects as any)?.name || "—"}</span>
+                    <span className="tabular-nums text-foreground">{formatDuration(e.duration_seconds || 0)}</span>
+                    <button onClick={() => setEditEntry(e)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground">
+                      <Pencil className="h-2.5 w-2.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

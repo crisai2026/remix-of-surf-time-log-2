@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { nzMidnightToUTC } from "@/lib/formatTime";
 
 export function useTimeEntries(date?: string) {
   return useQuery({
@@ -11,16 +12,20 @@ export function useTimeEntries(date?: string) {
         .order("start_time", { ascending: false });
 
       if (date) {
-        const start = `${date}T00:00:00`;
-        const end = `${date}T23:59:59`;
-        q = q.gte("start_time", start).lte("start_time", end);
+        // Convert NZDT date boundaries to UTC for proper filtering
+        const startUTC = nzMidnightToUTC(date);
+        const nextDay = new Date(new Date(date + "T12:00:00").getTime());
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextDateStr = `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, "0")}-${String(nextDay.getDate()).padStart(2, "0")}`;
+        const endUTC = nzMidnightToUTC(nextDateStr);
+        q = q.gte("start_time", startUTC).lt("start_time", endUTC);
       }
 
       const { data, error } = await q;
       if (error) throw error;
       return data;
     },
-    refetchInterval: 10000, // refresh for running timers
+    refetchInterval: 10000,
   });
 }
 
@@ -43,12 +48,28 @@ export function useRunningEntry() {
 export function useStartTimer() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ projectId, taskId, description }: { projectId: string; taskId?: string; description?: string }) => {
+    mutationFn: async ({ projectId, taskId, description, isOutOfPlan, plannedCategory }: {
+      projectId: string;
+      taskId?: string;
+      description?: string;
+      isOutOfPlan?: boolean;
+      plannedCategory?: string;
+    }) => {
       // Stop any running entry first
-      await supabase
+      const { data: runningEntries } = await supabase
         .from("time_entries")
-        .update({ is_running: false, end_time: new Date().toISOString(), duration_seconds: 0 })
+        .select("id, start_time, paused_seconds")
         .eq("is_running", true);
+
+      if (runningEntries && runningEntries.length > 0) {
+        for (const entry of runningEntries) {
+          const duration = Math.floor((Date.now() - new Date(entry.start_time).getTime()) / 1000) - (entry.paused_seconds || 0);
+          await supabase
+            .from("time_entries")
+            .update({ is_running: false, end_time: new Date().toISOString(), duration_seconds: Math.max(0, duration), paused_at: null })
+            .eq("id", entry.id);
+        }
+      }
 
       const { data, error } = await supabase
         .from("time_entries")
@@ -58,6 +79,8 @@ export function useStartTimer() {
           description: description || null,
           start_time: new Date().toISOString(),
           is_running: true,
+          is_out_of_plan: isOutOfPlan || false,
+          planned_category: plannedCategory || null,
         })
         .select("*, projects(*), tasks(*)")
         .single();
@@ -67,6 +90,7 @@ export function useStartTimer() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["running_entry"] });
       qc.invalidateQueries({ queryKey: ["time_entries"] });
+      qc.invalidateQueries({ queryKey: ["week_entries"] });
     },
   });
 }
@@ -80,12 +104,12 @@ export function useStopTimer() {
         .select("start_time, paused_seconds")
         .eq("id", entryId)
         .single();
-      
+
       if (!entry) throw new Error("Entry not found");
-      
+
       const totalElapsed = Math.floor((Date.now() - new Date(entry.start_time).getTime()) / 1000);
-      const duration = totalElapsed - ((entry as any).paused_seconds || 0);
-      
+      const duration = totalElapsed - (entry.paused_seconds || 0);
+
       const { data, error } = await supabase
         .from("time_entries")
         .update({
@@ -103,6 +127,7 @@ export function useStopTimer() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["running_entry"] });
       qc.invalidateQueries({ queryKey: ["time_entries"] });
+      qc.invalidateQueries({ queryKey: ["week_entries"] });
     },
   });
 }
@@ -135,12 +160,12 @@ export function useResumeTimer() {
         .select("paused_at, paused_seconds")
         .eq("id", entryId)
         .single();
-      
-      if (!entry || !(entry as any).paused_at) throw new Error("Entry not paused");
-      
-      const pausedDuration = Math.floor((Date.now() - new Date((entry as any).paused_at).getTime()) / 1000);
-      const newPausedSeconds = ((entry as any).paused_seconds || 0) + pausedDuration;
-      
+
+      if (!entry || !entry.paused_at) throw new Error("Entry not paused");
+
+      const pausedDuration = Math.floor((Date.now() - new Date(entry.paused_at).getTime()) / 1000);
+      const newPausedSeconds = (entry.paused_seconds || 0) + pausedDuration;
+
       const { data, error } = await supabase
         .from("time_entries")
         .update({ paused_at: null, paused_seconds: newPausedSeconds })
