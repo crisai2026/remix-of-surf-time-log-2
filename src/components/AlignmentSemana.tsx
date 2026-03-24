@@ -341,11 +341,11 @@ export function AlignmentSemana() {
         ))}
       </div>
 
-      {/* 3. SESSIONS PER DAY CHART */}
-      <SessionsPerDayChart planned={plannedSessionsPerDay} actual={actualSessionsPerDay} />
-
-      {/* 4. WEEKLY TREND */}
-      {weeklyTrend.length > 0 && <WeeklyTrendChart weeks={weeklyTrend} />}
+      {/* 3+4. CHARTS SIDE BY SIDE */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <SessionsPerDayChart planned={plannedSessionsPerDay} actual={actualSessionsPerDay} todayDayIndex={todayDayIndex} />
+        {weeklyTrend.length > 0 && <WeeklyTrendChart weeks={weeklyTrend} />}
+      </div>
 
       {/* 5. MOTOR NEGLECTED ALERT */}
       <MotorAlert motors={motorData.map(m => ({ label: m.label, actualHours: m.actualHours, goalHours: m.goalHours, pct: m.pct }))} />
