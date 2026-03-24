@@ -20,7 +20,7 @@ export const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   jobhunt:   { textColor: "#3C3489", lightBg: "#EEEDFE", darkBg: "#2A2854", motorLabel: "Motor 1 · Cash" },
   proyectos: { textColor: "#96680A", lightBg: "#FAEEDA", darkBg: "#3A2E10", motorLabel: "Motor 3 · Proyectos" },
   ai:        { textColor: "#0C447C", lightBg: "#E6F1FB", darkBg: "#152840", motorLabel: "Motor 2 · AI" },
-  familia:   { textColor: "#72243E", lightBg: "#FBEAF0", darkBg: "#3A1828" },
+  familia:   { textColor: "#72243E", lightBg: "#FBEAF0", darkBg: "#3A1828", motorLabel: "Motor 4 · Familia" },
   whanau:    { textColor: "#2C2C2A", lightBg: "#D3D1C7", darkBg: "#34332E" },
   hijas:     { textColor: "#4B1528", lightBg: "#F4C0D1", darkBg: "#3A1828" },
   rutina:    { textColor: "#777777", lightBg: "#EDEBE8", darkBg: "#2A2724" },
@@ -31,7 +31,7 @@ export const ACTIVITY_OPTIONS = [
   { label: "Jobhunt", category: "jobhunt", motor: 1 },
   { label: "Proyectos", category: "proyectos", motor: 3 },
   { label: "Aprender AI", category: "ai", motor: 2 },
-  { label: "Familia", category: "familia" },
+  { label: "Familia", category: "familia", motor: 4 },
   { label: "Whanau Support", category: "whanau" },
   { label: "Tarde hijas", category: "hijas" },
 ];
@@ -40,6 +40,7 @@ export const MOTOR_GOALS: Record<number, { label: string; category: string; week
   1: { label: "Motor 1 · Cash", category: "jobhunt", weeklyHours: 7.5 },
   2: { label: "Motor 2 · AI", category: "ai", weeklyHours: 4 },
   3: { label: "Motor 3 · Proyectos", category: "proyectos", weeklyHours: 5 },
+  4: { label: "Motor 4 · Familia", category: "familia", weeklyHours: 3.5 },
 };
 
 // Map categories to project names in DB
@@ -60,7 +61,7 @@ export const WEEKLY_PLAN: PlanBlock[][] = [
     { start: "07:15", end: "08:30", activity: "Despertar/desayuno", category: "rutina" },
     { start: "08:30", end: "09:00", activity: "Drop Off", category: "rutina" },
     { start: "09:00", end: "09:30", activity: "Ordenar", category: "rutina" },
-    { start: "09:30", end: "11:00", activity: "Prep reunión", category: "familia" },
+    { start: "09:30", end: "11:00", activity: "Prep reunión", category: "familia", motor: 4 },
     { start: "11:00", end: "13:00", activity: "Jobhunt", category: "jobhunt", motor: 1 },
     { start: "13:30", end: "14:15", activity: "Aprender AI", category: "ai", motor: 2 },
     { start: "15:00", end: "17:30", activity: "Whanau Support", category: "whanau" },
@@ -70,7 +71,7 @@ export const WEEKLY_PLAN: PlanBlock[][] = [
     { start: "07:15", end: "08:30", activity: "Despertar/desayuno", category: "rutina" },
     { start: "08:30", end: "09:00", activity: "Ordenar", category: "rutina" },
     { start: "09:00", end: "09:30", activity: "Buffer", category: "buffer" },
-    { start: "09:30", end: "11:30", activity: "Reunión hermanos", category: "familia" },
+    { start: "09:30", end: "11:30", activity: "Reunión hermanos", category: "familia", motor: 4 },
     { start: "12:00", end: "13:30", activity: "Proyectos", category: "proyectos", motor: 3 },
     { start: "13:45", end: "14:30", activity: "Aprender AI", category: "ai", motor: 2 },
     { start: "15:00", end: "17:30", activity: "Tarde hijas", category: "hijas" },
