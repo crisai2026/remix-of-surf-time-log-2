@@ -27,7 +27,7 @@ export function MotorAlert({ motors }: Props) {
           <CheckCircle className="h-4 w-4" style={{ color: "#2E7D32" }} />
         </div>
         <p className="text-xs font-medium flex-1" style={{ color: "#2E7D32" }}>
-          Todos los motores van bien esta semana.
+          All engines are on track this week.
         </p>
       </div>
     );
@@ -41,9 +41,9 @@ export function MotorAlert({ motors }: Props) {
         <AlertTriangle className="h-4 w-4" style={{ color: "#B8860B" }} />
       </div>
       <p className="text-xs font-medium flex-1" style={{ color: "#5D4E37" }}>
-        {neglected.label} está al {Math.round(neglected.pct)}% de su meta — es tu motor más rezagado esta semana.
+        {neglected.label} is at {Math.round(neglected.pct)}% of its goal — it's your most neglected engine this week.
       </p>
-      <InfoTooltip text={`${neglected.label}: planificaste ${neglected.goalHours}h, registraste ${neglected.actualHours}h.`} />
+      <InfoTooltip text={`${neglected.label}: planned ${neglected.goalHours}h, logged ${neglected.actualHours}h.`} />
     </div>
   );
 }
