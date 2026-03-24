@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { Waves } from "lucide-react";
 
 export default function Auth() {
   const { user, loading } = useAuth();
@@ -18,7 +19,7 @@ export default function Auth() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Cargando...</p>
+        <Waves className="w-8 h-8 text-primary animate-pulse" />
       </div>
     );
   }
@@ -53,15 +54,26 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">{isLogin ? "Iniciar sesión" : "Crear cuenta"}</CardTitle>
-          <CardDescription>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/40 flex flex-col items-center justify-center px-4">
+      {/* Branding */}
+      <div className="mb-8 text-center animate-fade-in">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Waves className="w-9 h-9 text-primary" />
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Marea</h1>
+        </div>
+        <p className="text-muted-foreground text-sm">Tu tiempo, tu ritmo</p>
+      </div>
+
+      {/* Auth Card */}
+      <Card className="w-full max-w-sm shadow-lg border-border/60 animate-fade-in" style={{ animationDelay: "150ms" }}>
+        <CardContent className="pt-6">
+          <h2 className="text-lg font-semibold text-center mb-1">
+            {isLogin ? "Iniciar sesión" : "Crear cuenta"}
+          </h2>
+          <p className="text-sm text-muted-foreground text-center mb-5">
             {isLogin ? "Ingresa tus credenciales" : "Regístrate con tu email"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -90,6 +102,7 @@ export default function Auth() {
               {submitting ? "..." : isLogin ? "Entrar" : "Registrarse"}
             </Button>
           </form>
+
           <div className="mt-4 text-center">
             <button
               type="button"
@@ -101,6 +114,11 @@ export default function Auth() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Footer */}
+      <p className="mt-8 text-xs text-muted-foreground animate-fade-in" style={{ animationDelay: "300ms" }}>
+        Built with focus ✦
+      </p>
     </div>
   );
 }
