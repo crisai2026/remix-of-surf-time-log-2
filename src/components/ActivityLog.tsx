@@ -188,7 +188,7 @@ export function ActivityLog() {
                     return (
                       <div
                         key={entry.id}
-                        className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2"
+                        className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 group"
                       >
                         <span
                           className="h-2.5 w-2.5 rounded-full shrink-0"
@@ -215,6 +215,27 @@ export function ActivityLog() {
                             <div className="text-xs font-medium tabular-nums">{duration}</div>
                           )}
                         </div>
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => setEditEntry(entry)}
+                            className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm("¿Eliminar esta entrada?")) {
+                                deleteEntry.mutate(entry.id, {
+                                  onSuccess: () => toast.success("Entrada eliminada"),
+                                  onError: () => toast.error("Error al eliminar"),
+                                });
+                              }
+                            }}
+                            className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -224,6 +245,12 @@ export function ActivityLog() {
           })}
         </div>
       )}
+
+      <EditEntryDialog
+        entry={editEntry}
+        open={!!editEntry}
+        onOpenChange={(open) => { if (!open) setEditEntry(null); }}
+      />
     </div>
   );
 }
