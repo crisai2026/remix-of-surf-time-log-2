@@ -1,20 +1,37 @@
 
 
-## Plan: Add Familia as Motor 4 in Weekly Plan
+## Plan: Agregar autenticación y aislamiento de datos por usuario
 
-**Problem:** The DB project "Familia" has `motor_number=4` and `weekly_goal_hours=3.5`, but the weekly plan config doesn't treat it as a motor. The `MOTOR_GOALS` object only has motors 1-3, and the `familia` blocks in `WEEKLY_PLAN` don't have `motor: 4`. This means Familia time entries are counted as "actual" motor time but have 0 planned minutes, skewing the 62% calculation.
+### Qué se logra
+Cada persona podrá registrarse con email/contraseña, hacer login, y ver **solo sus propios** proyectos, tareas y registros de tiempo. Los datos de un usuario no serán visibles para otros.
 
-**File: `src/lib/weeklyPlan.ts`**
+### Cambios necesarios
 
-1. **Add Motor 4 to `MOTOR_GOALS`:** Add entry `4: { label: "Motor 4 · Familia", category: "familia", weeklyHours: 3.5 }`
+#### 1. Migración de base de datos
+Agregar columna `user_id` (referencia a `auth.users`) a las 4 tablas principales:
+- `projects` → `user_id uuid references auth.users(id) on delete cascade`
+- `tasks` → `user_id uuid` (heredado del proyecto, pero útil para filtrar directo)
+- `time_entries` → `user_id uuid references auth.users(id) on delete cascade`
+- `tags` → `user_id uuid references auth.users(id) on delete cascade`
+- `time_entry_tags` → (hereda seguridad vía las otras tablas)
 
-2. **Add `motorLabel` to familia in `CATEGORY_STYLES`:** Add `motorLabel: "Motor 4 · Familia"` to the existing familia style entry.
+Reemplazar todas las políticas RLS públicas por políticas que filtren por `auth.uid()`:
+```sql
+-- Ejemplo para projects:
+DROP POLICY "Public read projects" ON projects;
+CREATE POLICY "Users read own projects" ON projects
+  FOR SELECT USING (auth.uid() = user_id);
+-- Similar para INSERT, UPDATE, DELETE en cada tabla
+```
 
-3. **Add `motor: 4` to familia blocks in `WEEKLY_PLAN`:**
-   - Monday: "Prep reunión" (09:30-11:00) → add `motor: 4`
-   - Tuesday: "Reunión hermanos" (09:30-11:30) → add `motor: 4`
+Hacer que `user_id` se asigne automáticamente con `DEFAULT auth.uid()`.
 
-4. **Add Familia to `ACTIVITY_OPTIONS`:** Update the existing "Familia" entry to include `motor: 4`.
+#### 2. Página de autenticación (Login/Signup)
+- Crear `src/pages/Auth.tsx` con formulario de login y registro por email/contraseña
+- Agregar ruta `/auth` en `App.tsx`
+- Crear contexto de auth o usar hook que escuche `onAuthStateChange`
+- Redirigir a `/auth` si no hay sesión activa
+- Incluir botón de logout en la interfaz principal
 
-No other files need changes — the dashboard already dynamically reads from `MOTOR_GOALS` and processes all motors.
-
+#### 3. Actualizar queries del frontend
+- No se necesitan cambios en los hooks (`
