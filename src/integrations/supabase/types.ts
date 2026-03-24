@@ -23,7 +23,6 @@ export type Database = {
           motor_number: number | null
           name: string
           sort_order: number
-          user_id: string | null
           weekly_goal_hours: number | null
         }
         Insert: {
@@ -34,7 +33,6 @@ export type Database = {
           motor_number?: number | null
           name: string
           sort_order?: number
-          user_id?: string | null
           weekly_goal_hours?: number | null
         }
         Update: {
@@ -45,7 +43,6 @@ export type Database = {
           motor_number?: number | null
           name?: string
           sort_order?: number
-          user_id?: string | null
           weekly_goal_hours?: number | null
         }
         Relationships: []
@@ -56,21 +53,18 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          user_id: string | null
         }
         Insert: {
           color?: string
           created_at?: string
           id?: string
           name: string
-          user_id?: string | null
         }
         Update: {
           color?: string
           created_at?: string
           id?: string
           name?: string
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -80,21 +74,18 @@ export type Database = {
           id: string
           name: string
           project_id: string
-          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
           project_id: string
-          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
           project_id?: string
-          user_id?: string | null
         }
         Relationships: [
           {
@@ -123,7 +114,6 @@ export type Database = {
           project_id: string
           start_time: string
           task_id: string | null
-          user_id: string | null
         }
         Insert: {
           calendar_event_id?: string | null
@@ -141,7 +131,6 @@ export type Database = {
           project_id: string
           start_time: string
           task_id?: string | null
-          user_id?: string | null
         }
         Update: {
           calendar_event_id?: string | null
@@ -159,7 +148,6 @@ export type Database = {
           project_id?: string
           start_time?: string
           task_id?: string | null
-          user_id?: string | null
         }
         Relationships: [
           {

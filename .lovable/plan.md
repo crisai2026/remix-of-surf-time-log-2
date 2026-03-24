@@ -1,14 +1,20 @@
-## Plan: Actualizar tagline y agregar texto de espíritu en Auth
 
-### Cambios en `src/pages/Auth.tsx`
 
-1. **Tagline**: "Tu tiempo, tu ritmo" → **"Mide lo que importa"**
-2. **Párrafo de espíritu** debajo del tagline, algo como:
+## Plan: Add Familia as Motor 4 in Weekly Plan
 
-> *Hecha por mentes neurodivergentes para todo el mundo. Marea te ayuda a visualizar y elimina la fricción entre lo que haces y lo que quieres hacer — para que cambiar de tarea no sea una batalla, sino una ola.*
+**Problem:** The DB project "Familia" has `motor_number=4` and `weekly_goal_hours=3.5`, but the weekly plan config doesn't treat it as a motor. The `MOTOR_GOALS` object only has motors 1-3, and the `familia` blocks in `WEEKLY_PLAN` don't have `motor: 4`. This means Familia time entries are counted as "actual" motor time but have 0 planned minutes, skewing the 62% calculation.
 
-3. Estilizado sutil: `text-muted-foreground text-xs max-w-xs text-center mx-auto` con un poco de margen inferior, para que no compita con el formulario.
+**File: `src/lib/weeklyPlan.ts`**
 
-### Archivo
+1. **Add Motor 4 to `MOTOR_GOALS`:** Add entry `4: { label: "Motor 4 · Familia", category: "familia", weeklyHours: 3.5 }`
 
-- `src/pages/Auth.tsx` — sección de branding (líneas ~62-68)
+2. **Add `motorLabel` to familia in `CATEGORY_STYLES`:** Add `motorLabel: "Motor 4 · Familia"` to the existing familia style entry.
+
+3. **Add `motor: 4` to familia blocks in `WEEKLY_PLAN`:**
+   - Monday: "Prep reunión" (09:30-11:00) → add `motor: 4`
+   - Tuesday: "Reunión hermanos" (09:30-11:30) → add `motor: 4`
+
+4. **Add Familia to `ACTIVITY_OPTIONS`:** Update the existing "Familia" entry to include `motor: 4`.
+
+No other files need changes — the dashboard already dynamically reads from `MOTOR_GOALS` and processes all motors.
+
