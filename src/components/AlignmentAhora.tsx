@@ -261,7 +261,7 @@ export function AlignmentAhora() {
         {!isOutOfPlan && style?.motorLabel && (
           <span
             className="inline-block text-[10px] px-2 py-0.5 rounded-full mb-2"
-            style={{ backgroundColor: dark ? style.darkBg : style.lightBg, color: style.textColor, border: `1px solid ${style.textColor}20` }}
+            style={{ backgroundColor: dark ? `${activeColor}20` : `${activeColor}15`, color: activeColor, border: `1px solid ${activeColor}20` }}
           >
             {style.motorLabel}
           </span>
