@@ -137,7 +137,6 @@ export function AlignmentSemana() {
       const plannedHours = +(plannedMin / 60).toFixed(1);
       const goalHours = (mp.weekly_goal_hours as number) || 0;
 
-      const style = cat ? CATEGORY_STYLES[cat] : null;
       return {
         motor: mp.motor_number,
         label: `${mp.motor_number} · ${mp.name}`,
@@ -145,9 +144,9 @@ export function AlignmentSemana() {
         plannedHours,
         goalHours,
         pct: goalHours > 0 ? Math.min((actualHours / goalHours) * 100, 100) : 0,
-        color: style?.textColor || mp.color,
-        lightBg: style?.lightBg || "hsl(var(--secondary))",
-        darkBg: style?.darkBg || "hsl(var(--secondary))",
+        color: mp.color,
+        lightBg: `${mp.color}15`,
+        darkBg: `${mp.color}20`,
       };
     });
   }, [weekEntries, motorProjects]);

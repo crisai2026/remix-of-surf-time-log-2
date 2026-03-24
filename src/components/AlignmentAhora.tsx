@@ -31,16 +31,22 @@ function useDarkMode() {
   return document.documentElement.classList.contains("dark");
 }
 
-function CategoryBg({ category, children, className = "", selected = false }: {
-  category: string; children: React.ReactNode; className?: string; selected?: boolean;
+function CategoryBg({ category, children, className = "", selected = false, projectColor }: {
+  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string;
 }) {
   const dark = useDarkMode();
   const style = CATEGORY_STYLES[category];
-  if (!style) return <div className={className}>{children}</div>;
+  const color = projectColor || style?.textColor;
+  if (!color && !style) return <div className={className}>{children}</div>;
   return (
     <div
       className={`${className} ${selected ? "ring-2 ring-primary shadow-md" : ""}`}
-      style={{ backgroundColor: dark ? style.darkBg : style.lightBg, color: style.textColor }}
+      style={{
+        backgroundColor: projectColor
+          ? (dark ? `${projectColor}20` : `${projectColor}15`)
+          : (dark ? style?.darkBg : style?.lightBg),
+        color: color,
+      }}
     >
       {children}
     </div>
