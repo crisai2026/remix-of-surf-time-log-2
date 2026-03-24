@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toNZDate, nzMidnightToUTC, todayISO, getWeekDates, formatTime, formatDuration } from "@/lib/formatTime";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Pencil, Trash2 } from "lucide-react";
+import { useDeleteEntry } from "@/lib/hooks/useTimeEntries";
+import { EditEntryDialog } from "@/components/EditEntryDialog";
+import { toast } from "sonner";
 
 type TimePeriod = "hoy" | "semana" | "mes" | "todo";
 
@@ -51,6 +54,8 @@ function formatDayHeader(dateStr: string): string {
 export function ActivityLog() {
   const [period, setPeriod] = useState<TimePeriod>("semana");
   const [categoryFilter, setCategoryFilter] = useState<string>("todas");
+  const [editEntry, setEditEntry] = useState<any>(null);
+  const deleteEntry = useDeleteEntry();
 
   const range = useMemo(() => getDateRange(period), [period]);
 
@@ -183,7 +188,7 @@ export function ActivityLog() {
                     return (
                       <div
                         key={entry.id}
-                        className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2"
+                        className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 group"
                       >
                         <span
                           className="h-2.5 w-2.5 rounded-full shrink-0"
@@ -210,6 +215,27 @@ export function ActivityLog() {
                             <div className="text-xs font-medium tabular-nums">{duration}</div>
                           )}
                         </div>
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => setEditEntry(entry)}
+                            className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm("¿Eliminar esta entrada?")) {
+                                deleteEntry.mutate(entry.id, {
+                                  onSuccess: () => toast.success("Entrada eliminada"),
+                                  onError: () => toast.error("Error al eliminar"),
+                                });
+                              }
+                            }}
+                            className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -219,6 +245,12 @@ export function ActivityLog() {
           })}
         </div>
       )}
+
+      <EditEntryDialog
+        entry={editEntry}
+        open={!!editEntry}
+        onOpenChange={(open) => { if (!open) setEditEntry(null); }}
+      />
     </div>
   );
 }
