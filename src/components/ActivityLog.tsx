@@ -9,12 +9,12 @@ import { useDeleteEntry } from "@/lib/hooks/useTimeEntries";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { toast } from "sonner";
 
-type TimePeriod = "hoy" | "semana" | "mes" | "todo";
+type TimePeriod = "today" | "week" | "month" | "all";
 
 function getDateRange(period: TimePeriod): { gte?: string; lt?: string } {
-  if (period === "todo") return {};
+  if (period === "all") return {};
 
-  if (period === "hoy") {
+  if (period === "today") {
     const today = todayISO();
     const [y, m, d] = today.split("-").map(Number);
     const tomorrow = new Date(y, m - 1, d + 1);
@@ -22,7 +22,7 @@ function getDateRange(period: TimePeriod): { gte?: string; lt?: string } {
     return { gte: nzMidnightToUTC(today), lt: nzMidnightToUTC(tomorrowStr) };
   }
 
-  if (period === "semana") {
+  if (period === "week") {
     const weekDates = getWeekDates();
     const lastDay = weekDates[6];
     const [y, m, d] = lastDay.split("-").map(Number);
@@ -31,7 +31,7 @@ function getDateRange(period: TimePeriod): { gte?: string; lt?: string } {
     return { gte: nzMidnightToUTC(weekDates[0]), lt: nzMidnightToUTC(dayAfterStr) };
   }
 
-  // mes
+  // month
   const today = todayISO();
   const [y, m] = today.split("-").map(Number);
   const firstDay = `${y}-${String(m).padStart(2, "0")}-01`;
@@ -42,7 +42,7 @@ function getDateRange(period: TimePeriod): { gte?: string; lt?: string } {
 function formatDayHeader(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   const date = new Date(y, m - 1, d);
-  const formatted = date.toLocaleDateString("es-CL", {
+  const formatted = date.toLocaleDateString("en-NZ", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -52,8 +52,8 @@ function formatDayHeader(dateStr: string): string {
 }
 
 export function ActivityLog() {
-  const [period, setPeriod] = useState<TimePeriod>("semana");
-  const [categoryFilter, setCategoryFilter] = useState<string>("todas");
+  const [period, setPeriod] = useState<TimePeriod>("week");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [editEntry, setEditEntry] = useState<any>(null);
   const deleteEntry = useDeleteEntry();
 
@@ -86,7 +86,7 @@ export function ActivityLog() {
 
   const filteredEntries = useMemo(() => {
     if (!entries) return [];
-    if (categoryFilter === "todas") return entries;
+    if (categoryFilter === "all") return entries;
     return entries.filter((e) => e.project_id === categoryFilter);
   }, [entries, categoryFilter]);
 
@@ -106,10 +106,10 @@ export function ActivityLog() {
   }, [filteredEntries]);
 
   const periodOptions: { value: TimePeriod; label: string }[] = [
-    { value: "hoy", label: "Hoy" },
-    { value: "semana", label: "Esta semana" },
-    { value: "mes", label: "Este mes" },
-    { value: "todo", label: "Todo" },
+    { value: "today", label: "Today" },
+    { value: "week", label: "This week" },
+    { value: "month", label: "This month" },
+    { value: "all", label: "All" },
   ];
 
   return (
@@ -137,8 +137,8 @@ export function ActivityLog() {
             <SelectValue placeholder="Todas" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todas">
-              <span className="text-xs">Todas</span>
+            <SelectItem value="all">
+              <span className="text-xs">All</span>
             </SelectItem>
             {projects?.map((p) => (
               <SelectItem key={p.id} value={p.id}>
@@ -157,11 +157,11 @@ export function ActivityLog() {
 
       {/* Content */}
       {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground text-sm">Cargando…</div>
+        <div className="text-center py-12 text-muted-foreground text-sm">Loading…</div>
       ) : grouped.length === 0 ? (
         <div className="text-center py-12 space-y-2">
           <ClipboardList className="h-8 w-8 mx-auto text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">Sin registros</p>
+          <p className="text-sm text-muted-foreground">No entries</p>
         </div>
       ) : (
         <div className="space-y-5">
@@ -178,7 +178,7 @@ export function ActivityLog() {
                 <div className="space-y-1.5">
                   {dayEntries.map((entry) => {
                     const project = entry.projects as any;
-                    const projectName = project?.name || "Sin categoría";
+                    const projectName = project?.name || "No project";
                     const projectColor = project?.color || "hsl(var(--muted))";
                     const timeRange = `${formatTime(entry.start_time)}${entry.end_time ? ` – ${formatTime(entry.end_time)}` : ""}`;
                     const duration = entry.duration_seconds ? formatDuration(entry.duration_seconds) : "";
@@ -199,7 +199,7 @@ export function ActivityLog() {
                             <span className="text-sm font-medium truncate">{projectName}</span>
                             {entry.is_out_of_plan && (
                               <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
-                                fuera de plan
+                                off plan
                               </Badge>
                             )}
                           </div>
@@ -224,10 +224,10 @@ export function ActivityLog() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm("¿Eliminar esta entrada?")) {
+                              if (confirm("Delete this entry?")) {
                                 deleteEntry.mutate(entry.id, {
-                                  onSuccess: () => toast.success("Entrada eliminada"),
-                                  onError: () => toast.error("Error al eliminar"),
+                                  onSuccess: () => toast.success("Entry deleted"),
+                                  onError: () => toast.error("Error deleting"),
                                 });
                               }
                             }}
