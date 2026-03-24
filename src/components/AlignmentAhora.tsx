@@ -327,7 +327,7 @@ export function AlignmentAhora() {
       {/* Next block */}
       {nextBlock && (
         <div className="rounded-xl bg-secondary/50 border border-border p-3 flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Siguiente</p>
             <p className="text-sm font-medium truncate">{nextBlock.activity}</p>
