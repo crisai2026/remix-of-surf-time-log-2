@@ -27,11 +27,11 @@ function useDarkMode() {
 }
 
 function getDescriptivePhrase(pct: number): { text: string; color: string } {
-  if (pct >= 90) return { text: "Casi perfecto", color: "#4A9A5A" };
-  if (pct >= 75) return { text: "Buen ritmo", color: "#7AAA5A" };
-  if (pct >= 50) return { text: "Semana irregular", color: "hsl(var(--primary))" };
-  if (pct >= 25) return { text: "Semana difícil", color: "#A0724E" };
-  return { text: "Hay que arrancar", color: "hsl(var(--muted-foreground))" };
+  if (pct >= 90) return { text: "Nearly perfect", color: "#4A9A5A" };
+  if (pct >= 75) return { text: "Good rhythm", color: "#7AAA5A" };
+  if (pct >= 50) return { text: "Irregular week", color: "hsl(var(--primary))" };
+  if (pct >= 25) return { text: "Tough week", color: "#A0724E" };
+  return { text: "Time to start", color: "hsl(var(--muted-foreground))" };
 }
 
 /** Get motor categories from weekly plan */
@@ -241,7 +241,7 @@ export function AlignmentSemana() {
         return d >= weekStart && d <= weekEnd && pName && motorNames.has(pName);
       }).length;
       if (sessions > 0 || offset === 0) {
-        const labelMap: Record<string, string> = { '-3': 'Hace 3 sem', '-2': 'Hace 2 sem', '-1': 'Sem pasada', '0': 'Esta sem' };
+        const labelMap: Record<string, string> = { '-3': '3 wk ago', '-2': '2 wk ago', '-1': 'Last wk', '0': 'This wk' };
         weeks.push({
           label: labelMap[String(offset)] || `Sem ${4 + offset}`,
           sessions,
@@ -284,8 +284,8 @@ export function AlignmentSemana() {
     });
   }, [selectedDay, weekEntries, weekDates, categoryColorMap]);
 
-  const streakLabel = (streakData || 0) === 1 ? "1 día" : `${streakData || 0} días`;
-  const dayAbbrs = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+  const streakLabel = (streakData || 0) === 1 ? "1 day" : `${streakData || 0} days`;
+  const dayAbbrs = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
   return (
     <div className="space-y-2.5">
@@ -301,8 +301,8 @@ export function AlignmentSemana() {
           </div>
           <p className="text-xs font-medium mt-1" style={{ color: sessionsPhrase.color }}>{sessionsPhrase.text}</p>
           <div className="flex items-center justify-center gap-1 mt-0.5">
-            <p className="text-[11px] text-muted-foreground">sesiones de motor</p>
-            <InfoTooltip text={`Tenías ${totalPlannedSessions} bloques de motor planificados esta semana. Arrancaste ${totalActualSessions}.`} />
+            <p className="text-[11px] text-muted-foreground">engine sessions</p>
+            <InfoTooltip text={`You had ${totalPlannedSessions} engine blocks planned this week. You started ${totalActualSessions}.`} />
           </div>
         </div>
 
@@ -316,8 +316,8 @@ export function AlignmentSemana() {
           </div>
           <p className="text-xs font-medium mt-1" style={{ color: timePhrase.color }}>{timePhrase.text}</p>
           <div className="flex items-center justify-center gap-1 mt-0.5">
-            <p className="text-[11px] text-muted-foreground">tiempo cubierto</p>
-            <InfoTooltip text={`Planificaste ${(totalPlannedMin / 60).toFixed(1)}h en motores. Registraste ${(totalActualMin / 60).toFixed(1)}h. Eso es un ${timePct}%.`} />
+            <p className="text-[11px] text-muted-foreground">time covered</p>
+            <InfoTooltip text={`You planned ${(totalPlannedMin / 60).toFixed(1)}h on engines. You logged ${(totalActualMin / 60).toFixed(1)}h. That's ${timePct}%.`} />
           </div>
         </div>
       </div>
@@ -326,7 +326,7 @@ export function AlignmentSemana() {
       <div className="flex justify-center">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs">
           <Flame className="h-3 w-3" />
-          <span>{streakLabel} · racha</span>
+          <span>{streakLabel} · streak</span>
         </div>
       </div>
 
@@ -363,7 +363,7 @@ export function AlignmentSemana() {
       {/* 6. MOTOR PROGRESS BARS */}
       {motorData.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-3">
-          <h3 className="text-xs font-semibold mb-3">Por motor</h3>
+          <h3 className="text-xs font-semibold mb-3">By engine</h3>
           <div className="space-y-3">
             {motorData.map(m => (
               <div key={m.motor}>
@@ -385,7 +385,7 @@ export function AlignmentSemana() {
       {/* 8. DAY DETAIL */}
       {selectedDay !== null && dayDetail && (
         <div className="rounded-xl bg-card border border-border p-3">
-          <h3 className="text-xs font-semibold mb-3">{getDayName(selectedDay)} — bloque a bloque</h3>
+          <h3 className="text-xs font-semibold mb-3">{getDayName(selectedDay)} — block by block</h3>
           <div className="space-y-2">
             {dayDetail.map((item, i) => (
               <div key={i} className="flex items-stretch gap-2">
@@ -425,7 +425,7 @@ export function AlignmentSemana() {
                   ) : (
                     <>
                       <p className="text-[11px] text-muted-foreground">—</p>
-                      <p className="text-[10px] text-muted-foreground">no registrado</p>
+                      <p className="text-[10px] text-muted-foreground">not logged</p>
                     </>
                   )}
                 </div>
