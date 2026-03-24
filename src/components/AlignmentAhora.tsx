@@ -247,7 +247,7 @@ export function AlignmentAhora() {
 
         <h3
           className="text-xl font-bold mb-1"
-          style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontFamily: "'DM Serif Display', serif" }}
+          style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (activeColor || "hsl(var(--foreground))"), fontFamily: "'DM Serif Display', serif" }}
         >
           {displayActivity}
         </h3>
