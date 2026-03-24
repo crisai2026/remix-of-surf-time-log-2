@@ -213,7 +213,9 @@ export function AlignmentAhora() {
     setOutOfPlanText("");
   };
 
+  const dbColor = displayCategory ? categoryColorMap[displayCategory] : null;
   const style = isOutOfPlan ? null : (displayCategory ? CATEGORY_STYLES[displayCategory] : null);
+  const activeColor = dbColor || style?.textColor || null;
   const dark = useDarkMode();
   const nowMin = today.getHours() * 60 + today.getMinutes();
 
