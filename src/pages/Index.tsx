@@ -12,8 +12,9 @@ import { AlignmentSemana } from "@/components/AlignmentSemana";
 import { BarChart3, Clock, FolderOpen } from "lucide-react";
 import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { getThemeContent } from "@/lib/themeContent";
+import { ActivityLog } from "@/components/ActivityLog";
 
-type AppMode = "tracker" | "alignment";
+type AppMode = "tracker" | "alignment" | "log";
 type TrackerTab = "timer" | "dashboard" | "projects";
 type AlignmentTab = "ahora" | "semana";
 
@@ -40,26 +41,19 @@ export default function Index() {
 
           {/* Top-level mode toggle */}
           <div className="flex bg-secondary rounded-lg p-0.5">
-            <button
-              onClick={() => setMode("tracker")}
-              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${
-                mode === "tracker"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground"
-              }`}
-            >
-              Tracker
-            </button>
-            <button
-              onClick={() => setMode("alignment")}
-              className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${
-                mode === "alignment"
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground"
-              }`}
-            >
-              Alignment
-            </button>
+            {(["tracker", "alignment", "log"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`flex-1 text-xs font-medium py-1.5 rounded-md transition-all ${
+                  mode === m
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {m === "tracker" ? "Tracker" : m === "alignment" ? "Alignment" : "Log"}
+              </button>
+            ))}
           </div>
 
           {/* Sub-navigation */}
@@ -75,7 +69,7 @@ export default function Index() {
                 <BarChart3 className="h-3.5 w-3.5" />
               </NavIcon>
             </nav>
-          ) : (
+          ) : mode === "alignment" ? (
             <div className="flex gap-1 mt-2 bg-secondary/50 rounded-lg p-0.5 w-fit">
               <button
                 onClick={() => setAlignmentTab("ahora")}
@@ -94,7 +88,7 @@ export default function Index() {
                 Mi semana
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </header>
 
@@ -111,12 +105,14 @@ export default function Index() {
           ) : (
             <DashboardCharts />
           )
-        ) : (
+        ) : mode === "alignment" ? (
           alignmentTab === "ahora" ? (
             <AlignmentAhora />
           ) : (
             <AlignmentSemana />
           )
+        ) : (
+          <ActivityLog />
         )}
       </main>
 
