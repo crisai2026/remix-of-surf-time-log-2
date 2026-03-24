@@ -8,7 +8,16 @@ import {
   WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT,
   getDayName, getPlannedMinutesForDay, timeToMinutes, type PlanBlock,
 } from "@/lib/weeklyPlan";
-import { getWeekDatesForOffset } from "@/lib/formatTime";
+import { getWeekDatesForOffset, toNZDate, todayISO, nzMidnightToUTC } from "@/lib/formatTime";
+
+// Case-insensitive reverse lookup
+function getProjectCategory(projectName: string): string | null {
+  const lower = projectName.toLowerCase();
+  for (const [cat, name] of Object.entries(CATEGORY_TO_PROJECT)) {
+    if (name.toLowerCase() === lower) return cat;
+  }
+  return null;
+}
 
 function useDarkMode() {
   return document.documentElement.classList.contains("dark");
@@ -21,15 +30,21 @@ export function AlignmentSemana() {
   const { visualTheme } = useVisualTheme();
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
+  const todayStr = todayISO();
 
   const { data: weekEntries } = useQuery({
     queryKey: ["alignment_week_entries", weekDates[0]],
     queryFn: async () => {
+      const startUTC = nzMidnightToUTC(weekDates[0]);
+      const endDate = new Date(new Date(weekDates[6] + "T12:00:00").getTime());
+      endDate.setDate(endDate.getDate() + 1);
+      const endDateStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
+      const endUTC = nzMidnightToUTC(endDateStr);
       const { data, error } = await supabase
         .from("time_entries")
         .select("*, projects(name, color)")
-        .gte("start_time", `${weekDates[0]}T00:00:00`)
-        .lte("start_time", `${weekDates[6]}T23:59:59`)
+        .gte("start_time", startUTC)
+        .lt("start_time", endUTC)
         .eq("is_running", false);
       if (error) throw error;
       return data;
@@ -46,13 +61,15 @@ export function AlignmentSemana() {
         .order("start_time", { ascending: false })
         .limit(100);
       if (error) throw error;
-      const uniqueDays = new Set(data?.map(e => e.start_time.split("T")[0]));
+      const uniqueDays = new Set(data?.map(e => toNZDate(e.start_time)));
       let streak = 0;
-      const today = new Date();
+      const [y, m, d] = todayStr.split("-").map(Number);
+      const base = new Date(y, m - 1, d);
       for (let i = 0; i < 60; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        if (uniqueDays.has(d.toISOString().split("T")[0])) streak++;
+        const dt = new Date(base);
+        dt.setDate(base.getDate() - i);
+        const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+        if (uniqueDays.has(key)) streak++;
         else if (i > 0) break;
       }
       return streak;
@@ -63,8 +80,8 @@ export function AlignmentSemana() {
   const motorProjects = useMemo(() => {
     if (!projects) return [];
     return projects
-      .filter(p => (p as any).motor_number != null)
-      .sort((a, b) => ((a as any).motor_number || 0) - ((b as any).motor_number || 0));
+      .filter(p => p.motor_number != null)
+      .sort((a, b) => (a.motor_number || 0) - (b.motor_number || 0));
   }, [projects]);
 
   // Calculate alignment per day using motor projects
@@ -72,14 +89,13 @@ export function AlignmentSemana() {
     if (!weekEntries || motorProjects.length === 0) return [];
 
     return weekDates.slice(0, 5).map((date, dayIndex) => {
-      const dayEntries = weekEntries.filter(e => e.start_time.startsWith(date));
+      const dayEntries = weekEntries.filter(e => toNZDate(e.start_time) === date);
 
       let totalPlanned = 0;
       let totalMatch = 0;
 
       for (const mp of motorProjects) {
-        // Find the category for this project in CATEGORY_TO_PROJECT (reverse lookup)
-        const cat = Object.entries(CATEGORY_TO_PROJECT).find(([_, name]) => name === mp.name)?.[0];
+        const cat = getProjectCategory(mp.name);
         const plannedMin = cat ? getPlannedMinutesForDay(dayIndex, cat) : 0;
         const actualSec = dayEntries
           .filter(e => e.project_id === mp.id)
@@ -111,7 +127,7 @@ export function AlignmentSemana() {
         .reduce((s, e) => s + (e.duration_seconds || 0), 0);
       const actualHours = +(actualSec / 3600).toFixed(1);
 
-      const cat = Object.entries(CATEGORY_TO_PROJECT).find(([_, name]) => name === mp.name)?.[0];
+      const cat = getProjectCategory(mp.name);
       let plannedMin = 0;
       if (cat) {
         for (let d = 0; d < 5; d++) {
@@ -123,8 +139,8 @@ export function AlignmentSemana() {
 
       const style = cat ? CATEGORY_STYLES[cat] : null;
       return {
-        motor: (mp as any).motor_number,
-        label: `Motor ${(mp as any).motor_number} · ${mp.name}`,
+        motor: mp.motor_number,
+        label: `${mp.motor_number} · ${mp.name}`,
         actualHours,
         plannedHours,
         goalHours,
@@ -140,7 +156,7 @@ export function AlignmentSemana() {
   const dayDetail = useMemo(() => {
     if (selectedDay === null || !weekEntries) return null;
     const date = weekDates[selectedDay];
-    const dayEntries = weekEntries.filter(e => e.start_time.startsWith(date));
+    const dayEntries = weekEntries.filter(e => toNZDate(e.start_time) === date);
     const plan = selectedDay < 5 ? WEEKLY_PLAN[selectedDay] : [];
 
     // Only non-routine blocks
@@ -148,7 +164,10 @@ export function AlignmentSemana() {
 
     return blocks.map(block => {
       const projectName = CATEGORY_TO_PROJECT[block.category];
-      const matching = dayEntries.filter(e => (e.projects as any)?.name === projectName);
+      const matching = dayEntries.filter(e => {
+        const eName = (e.projects as any)?.name;
+        return eName && projectName && eName.toLowerCase() === projectName.toLowerCase();
+      });
       const actualSec = matching.reduce((s, e) => s + (e.duration_seconds || 0), 0);
       const actualMin = actualSec / 60;
       const plannedMin = timeToMinutes(block.end) - timeToMinutes(block.start);
@@ -208,7 +227,7 @@ export function AlignmentSemana() {
           >
             <p className="text-[10px] text-muted-foreground">
               {dayAbbrs[i]}
-              {(visualTheme === "nostromo" || visualTheme === "matrix") && weekDates[i] === new Date().toISOString().slice(0, 10) && (
+              {(visualTheme === "nostromo" || visualTheme === "matrix") && weekDates[i] === todayStr && (
                 <span className="animate-blink ml-0.5">█</span>
               )}
             </p>
@@ -255,7 +274,7 @@ export function AlignmentSemana() {
       <div className="grid grid-cols-3 gap-2">
         {motorData.map(m => (
           <div key={m.motor} className="rounded-xl border border-border p-2.5 text-center" style={{ backgroundColor: dark ? m.darkBg : m.lightBg }}>
-            <p className="text-[10px] font-medium truncate" style={{ color: m.color }}>{m.label.split(" · ")[0]}</p>
+            <p className="text-[10px] font-medium truncate" style={{ color: m.color }}>{m.label}</p>
             <p className="text-sm font-semibold tabular-nums mt-0.5" style={{ color: m.color }}>
               {m.actualHours}h
               <span className="text-[10px] font-normal opacity-60">/{m.goalHours}h</span>

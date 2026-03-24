@@ -13,11 +13,19 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { formatTimer } from "@/lib/formatTime";
 import { toast } from "sonner";
 
-// Reverse lookup: project name → category
-const PROJECT_TO_CATEGORY: Record<string, string> = {};
-Object.entries(CATEGORY_TO_PROJECT).forEach(([cat, name]) => {
-  PROJECT_TO_CATEGORY[name] = cat;
-});
+// Case-insensitive reverse lookup: project name → category
+function buildProjectToCategory(): Record<string, string> {
+  const map: Record<string, string> = {};
+  Object.entries(CATEGORY_TO_PROJECT).forEach(([cat, name]) => {
+    map[name.toLowerCase()] = cat;
+  });
+  return map;
+}
+const PROJECT_TO_CATEGORY = buildProjectToCategory();
+
+function getProjectCategory(projectName: string): string | null {
+  return PROJECT_TO_CATEGORY[projectName.toLowerCase()] || null;
+}
 
 function useDarkMode() {
   return document.documentElement.classList.contains("dark");
@@ -68,24 +76,27 @@ export function AlignmentAhora() {
   const dayName = getDayName(dayIndex);
   const today = new Date();
 
-  // Derive active category from running entry (sync with Tracker)
+  // Derive active category from running entry (case-insensitive)
   const activeCategory = useMemo(() => {
     if (!running) return null;
     const projectName = (running.projects as any)?.name;
     if (!projectName) return null;
-    return PROJECT_TO_CATEGORY[projectName] || null;
+    return getProjectCategory(projectName);
   }, [running]);
 
-  // Determine what's displayed
-  const displayCategory = activeCategory || currentBlock?.category || null;
-  const displayActivity = activeCategory
-    ? (ACTIVITY_OPTIONS.find(a => a.category === activeCategory)?.label ||
-       CATEGORY_TO_PROJECT[activeCategory] ||
-       (running?.projects as any)?.name || activeCategory)
-    : currentBlock?.activity || "Tiempo libre";
+  // Display info - use description for out-of-plan entries
+  const isOutOfPlan = running?.is_out_of_plan === true;
+  const displayCategory = isOutOfPlan ? null : (activeCategory || currentBlock?.category || null);
+  const displayActivity = isOutOfPlan
+    ? (running?.description || "Fuera de plan")
+    : activeCategory
+      ? (ACTIVITY_OPTIONS.find(a => a.category === activeCategory)?.label ||
+         CATEGORY_TO_PROJECT[activeCategory] ||
+         (running?.projects as any)?.name || activeCategory)
+      : currentBlock?.activity || "Tiempo libre";
 
   const plannedCategory = currentBlock?.category || null;
-  const isDeviated = activeCategory !== null && activeCategory !== plannedCategory;
+  const isDeviated = !isOutOfPlan && activeCategory !== null && activeCategory !== plannedCategory;
   const isPaused = running && (running as any).paused_at;
 
   useEffect(() => {
@@ -110,10 +121,10 @@ export function AlignmentAhora() {
     const projectName = CATEGORY_TO_PROJECT[category];
     if (!projectName) return null;
 
-    const existing = projects?.find(p => p.name === projectName);
+    // Case-insensitive match
+    const existing = projects?.find(p => p.name.toLowerCase() === projectName.toLowerCase());
     if (existing) return existing.id;
 
-    // Auto-create the project
     const style = CATEGORY_STYLES[category];
     const { data, error } = await supabase
       .from("projects")
@@ -133,8 +144,6 @@ export function AlignmentAhora() {
   const handleStartActivity = async (category: string) => {
     const projectId = await findOrCreateProject(category);
     if (!projectId) return;
-
-    if (running) stopTimer.mutate(running.id);
 
     setShowSwitcher(false);
     setShowOutOfPlan(false);
@@ -169,19 +178,25 @@ export function AlignmentAhora() {
 
   const handleOutOfPlan = async () => {
     if (!outOfPlanText.trim()) return;
+
+    // Use the first available project as container (doesn't matter which, the entry is marked out-of-plan)
     const project = projects?.[0];
     if (!project) return;
 
-    if (running) stopTimer.mutate(running.id);
     setShowSwitcher(false);
+    setShowOutOfPlan(false);
 
     startTimer.mutate({
       projectId: project.id,
       description: outOfPlanText.trim(),
+      isOutOfPlan: true,
+      plannedCategory: currentBlock?.category || null,
     });
+
+    setOutOfPlanText("");
   };
 
-  const style = displayCategory ? CATEGORY_STYLES[displayCategory] : null;
+  const style = isOutOfPlan ? null : (displayCategory ? CATEGORY_STYLES[displayCategory] : null);
   const dark = useDarkMode();
   const nowMin = today.getHours() * 60 + today.getMinutes();
 
@@ -202,25 +217,29 @@ export function AlignmentAhora() {
         onClick={() => setShowSwitcher(true)}
         className="w-full text-left rounded-2xl border border-border p-6 transition-all hover:shadow-md"
         style={{
-          backgroundColor: style ? (dark ? style.darkBg : style.lightBg) : "hsl(var(--card))",
+          backgroundColor: isOutOfPlan
+            ? "hsl(var(--card))"
+            : style ? (dark ? style.darkBg : style.lightBg) : "hsl(var(--card))",
         }}
       >
-        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-3">AHORA</p>
+        <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-3">
+          {isOutOfPlan ? "FUERA DE PLAN" : "AHORA"}
+        </p>
 
         <h3
           className="text-xl font-bold mb-1"
-          style={{ color: style?.textColor || "hsl(var(--foreground))", fontFamily: "'DM Serif Display', serif" }}
+          style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontFamily: "'DM Serif Display', serif" }}
         >
           {displayActivity}
         </h3>
 
-        {currentBlock && (
+        {currentBlock && !isOutOfPlan && (
           <p className="text-xs mb-2" style={{ color: style?.textColor || "hsl(var(--muted-foreground))", opacity: 0.7 }}>
             {currentBlock.start} – {currentBlock.end}
           </p>
         )}
 
-        {style?.motorLabel && (
+        {!isOutOfPlan && style?.motorLabel && (
           <span
             className="inline-block text-[10px] px-2 py-0.5 rounded-full mb-2"
             style={{ backgroundColor: dark ? style.darkBg : style.lightBg, color: style.textColor, border: `1px solid ${style.textColor}20` }}
@@ -239,7 +258,7 @@ export function AlignmentAhora() {
           <div>
             <span
               className={`text-3xl tabular-nums ${isPaused ? "opacity-50" : ""}`}
-              style={{ color: style?.textColor || "hsl(var(--foreground))", fontWeight: 300 }}
+              style={{ color: isOutOfPlan ? "hsl(var(--foreground))" : (style?.textColor || "hsl(var(--foreground))"), fontWeight: 300 }}
             >
               {formatTimer(elapsed)}
             </span>
