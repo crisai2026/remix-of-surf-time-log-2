@@ -363,8 +363,8 @@ export function AlignmentSemana() {
                     {m.actualHours}h / {m.goalHours}h · {Math.round(m.pct)}%
                   </span>
                 </div>
-                <div className="h-3 rounded-md overflow-hidden" style={{ backgroundColor: m.lightBg }}>
-                  <div className="h-full rounded-md transition-all" style={{ width: `${m.pct}%`, backgroundColor: m.color }} />
+                <div className="h-1.5 rounded-sm overflow-hidden" style={{ backgroundColor: m.lightBg }}>
+                  <div className="h-full rounded-sm transition-all" style={{ width: `${m.pct}%`, backgroundColor: m.color }} />
                 </div>
               </div>
             ))}
