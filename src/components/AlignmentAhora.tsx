@@ -238,7 +238,7 @@ export function AlignmentAhora() {
         style={{
           backgroundColor: isOutOfPlan
             ? "hsl(var(--card))"
-            : style ? (dark ? style.darkBg : style.lightBg) : "hsl(var(--card))",
+            : activeColor ? (dark ? `${activeColor}20` : `${activeColor}15`) : "hsl(var(--card))",
         }}
       >
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-3">
