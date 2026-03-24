@@ -40,6 +40,7 @@ export const MOTOR_GOALS: Record<number, { label: string; category: string; week
   1: { label: "Motor 1 · Cash", category: "jobhunt", weeklyHours: 7.5 },
   2: { label: "Motor 2 · AI", category: "ai", weeklyHours: 4 },
   3: { label: "Motor 3 · Proyectos", category: "proyectos", weeklyHours: 5 },
+  4: { label: "Motor 4 · Familia", category: "familia", weeklyHours: 3.5 },
 };
 
 // Map categories to project names in DB
