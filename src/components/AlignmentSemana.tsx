@@ -278,7 +278,7 @@ export function AlignmentSemana() {
   const dayAbbrs = ["Lun", "Mar", "Mié", "Jue", "Vie"];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2.5">
       {/* 1. TWO HERO METRICS */}
       <div className="grid grid-cols-2 gap-4 py-4">
         {/* Sessions */}
