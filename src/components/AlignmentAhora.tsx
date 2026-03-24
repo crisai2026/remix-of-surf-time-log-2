@@ -357,7 +357,7 @@ export function AlignmentAhora() {
                 >
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
+                    style={{ backgroundColor: categoryColorMap[block.category] || CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
                   />
                   <span className={`flex-1 truncate ${isDone ? "line-through" : ""} ${isActive ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                     {block.activity}
