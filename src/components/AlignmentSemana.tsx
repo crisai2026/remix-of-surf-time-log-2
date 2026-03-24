@@ -187,13 +187,19 @@ export function AlignmentSemana() {
         matchStatus = Math.abs(actualMin - plannedMin) <= 20 ? "match" : "partial";
       }
 
-      const style = CATEGORY_STYLES[block.category];
+      const fallbackStyle = CATEGORY_STYLES[block.category];
+      const dbColor = categoryColorMap[block.category];
+      const resolvedStyle = {
+        textColor: dbColor || fallbackStyle?.textColor,
+        lightBg: dbColor ? `${dbColor}15` : fallbackStyle?.lightBg,
+        darkBg: dbColor ? `${dbColor}20` : fallbackStyle?.darkBg,
+      };
       return {
         block,
         actualMin: Math.round(actualMin),
         plannedMin,
         matchStatus,
-        style,
+        style: resolvedStyle,
       };
     });
   }, [selectedDay, weekEntries, weekDates]);
