@@ -36,7 +36,7 @@ export function MotorAlert({ motors }: Props) {
   if (!neglected || neglected.pct >= 60) return null;
 
   return (
-    <div className="rounded-xl p-3 flex items-center gap-3 border" style={{ backgroundColor: "#FFF8E1", borderColor: "#E8D5A0" }}>
+    <div className="rounded-xl px-3 py-2 flex items-center gap-3 border" style={{ backgroundColor: "#FFF8E1", borderColor: "#E8D5A0" }}>
       <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: "#F0E0A0" }}>
         <AlertTriangle className="h-4 w-4" style={{ color: "#B8860B" }} />
       </div>

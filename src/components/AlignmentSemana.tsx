@@ -61,6 +61,10 @@ export function AlignmentSemana() {
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
   const todayStr = todayISO();
+  const todayDayIndex = useMemo(() => {
+    const idx = weekDates.findIndex(d => d === todayStr);
+    return idx >= 0 && idx < 5 ? idx : 4;
+  }, [weekDates, todayStr]);
 
   const { data: weekEntries } = useQuery({
     queryKey: ["alignment_week_entries", weekDates[0]],
