@@ -1,4 +1,5 @@
 import { useAppContext } from "@/contexts/AppContext";
+import { MareaLogo } from "@/components/MareaLogo";
 
 export default function Landing() {
   const { setMode, setShowAuthModal } = useAppContext();
@@ -8,11 +9,9 @@ export default function Landing() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 max-w-lg mx-auto w-full">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <svg viewBox="0 0 80 48" className="mb-4" style={{ width: 72, height: 44 }}>
-            <line x1="12" y1="12" x2="68" y2="12" stroke="#D97757" strokeWidth="3" strokeLinecap="round" opacity="0.25" />
-            <line x1="12" y1="24" x2="68" y2="24" stroke="#D97757" strokeWidth="4.5" strokeLinecap="round" opacity="0.55" />
-            <line x1="12" y1="36" x2="68" y2="36" stroke="#D97757" strokeWidth="6" strokeLinecap="round" opacity="1" />
-          </svg>
+          <div className="mb-4">
+            <MareaLogo />
+          </div>
           <h1 className="text-4xl font-bold tracking-tight" style={{ color: "#1A1A1A" }}>
             Marea
           </h1>
