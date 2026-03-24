@@ -1,22 +1,14 @@
-
-
-## Plan: Mejorar la página de Auth con branding y diseño atractivo
-
-La página de login/registro actualmente es muy básica — solo un formulario blanco sin identidad. Vamos a hacerla más acogedora con el nombre de la app, una animación sutil y mejor diseño visual.
+## Plan: Actualizar tagline y agregar texto de espíritu en Auth
 
 ### Cambios en `src/pages/Auth.tsx`
 
-1. **Header con branding**: Agregar el nombre "Marea" grande con un ícono de ola (🌊) animado y un subtítulo descriptivo ("Tu tiempo, tu ritmo")
+1. **Tagline**: "Tu tiempo, tu ritmo" → **"Mide lo que importa"**
+2. **Párrafo de espíritu** debajo del tagline, algo como:
 
-2. **Gradiente de fondo**: Un fondo con gradiente sutil usando los colores del tema (tonos azul/teal que evocan "marea")
+> *Hecha por mentes neurodivergentes para todo el mundo. Marea te ayuda a visualizar y elimina la fricción entre lo que haces y lo que quieres hacer — para que cambiar de tarea no sea una batalla, sino una ola.*
 
-3. **Animación de entrada**: El card del formulario aparece con una animación fade-in + slide-up suave usando CSS
+3. Estilizado sutil: `text-muted-foreground text-xs max-w-xs text-center mx-auto` con un poco de margen inferior, para que no compita con el formulario.
 
-4. **Footer decorativo**: Un texto pequeño al pie ("Built with focus ✦") consistente con el footer de la app principal
+### Archivo
 
-5. **Visual polish**: Bordes más suaves en el card, sombra más pronunciada, mejor espaciado
-
-### Archivo a modificar
-- `src/pages/Auth.tsx` — rediseño completo del layout
-- `src/index.css` — agregar keyframe para animación de entrada (si no existe)
-
+- `src/pages/Auth.tsx` — sección de branding (líneas ~62-68)
