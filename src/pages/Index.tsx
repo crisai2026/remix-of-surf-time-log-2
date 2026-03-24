@@ -69,7 +69,7 @@ export default function Index() {
                 <BarChart3 className="h-3.5 w-3.5" />
               </NavIcon>
             </nav>
-          ) : (
+          ) : mode === "alignment" ? (
             <div className="flex gap-1 mt-2 bg-secondary/50 rounded-lg p-0.5 w-fit">
               <button
                 onClick={() => setAlignmentTab("ahora")}
@@ -88,7 +88,7 @@ export default function Index() {
                 Mi semana
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </header>
 
