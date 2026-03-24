@@ -105,12 +105,14 @@ export default function Index() {
           ) : (
             <DashboardCharts />
           )
-        ) : (
+        ) : mode === "alignment" ? (
           alignmentTab === "ahora" ? (
             <AlignmentAhora />
           ) : (
             <AlignmentSemana />
           )
+        ) : (
+          <ActivityLog />
         )}
       </main>
 
