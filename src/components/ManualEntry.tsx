@@ -25,7 +25,7 @@ export function ManualEntry() {
 
   const handleSubmit = () => {
     if (!projectId || !startTime || !endTime) {
-      toast.error("Completa proyecto, inicio y fin");
+      toast.error("Fill in project, start and end");
       return;
     }
     const today = new Date().toISOString().split("T")[0];
@@ -42,7 +42,7 @@ export function ManualEntry() {
           if (selectedTags.length > 0) {
             setEntryTags.mutate({ entryId: entry.id, tagIds: selectedTags });
           }
-          toast.success("Entrada registrada");
+          toast.success("Entry logged");
           setOpen(false);
           setDescription("");
           setStartTime("");
@@ -60,7 +60,7 @@ export function ManualEntry() {
         className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/40 hover:text-foreground transition-colors"
       >
         <Plus className="h-4 w-4" />
-        <span className="text-sm">Entrada manual</span>
+        <span className="text-sm">Manual entry</span>
       </button>
     );
   }
@@ -68,7 +68,7 @@ export function ManualEntry() {
   return (
     <div className="rounded-xl bg-card border border-border p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">Entrada manual</h3>
+        <h3 className="text-sm font-semibold text-foreground">Manual entry</h3>
         <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
           <X className="h-4 w-4" />
         </button>
@@ -76,7 +76,7 @@ export function ManualEntry() {
 
       <input
         type="text"
-        placeholder="Descripción (opcional)"
+        placeholder="Description (optional)"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
@@ -90,7 +90,7 @@ export function ManualEntry() {
           {currentProject && (
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentProject.color }} />
           )}
-          <span>{currentProject?.name || "Seleccionar proyecto"}</span>
+          <span>{currentProject?.name || "Select project"}</span>
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
 
@@ -138,7 +138,7 @@ export function ManualEntry() {
 
       <div className="flex gap-3">
         <div className="flex-1">
-          <label className="text-xs text-muted-foreground mb-1 block">Inicio</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Start</label>
           <input
             type="time"
             value={startTime}
@@ -147,7 +147,7 @@ export function ManualEntry() {
           />
         </div>
         <div className="flex-1">
-          <label className="text-xs text-muted-foreground mb-1 block">Fin</label>
+          <label className="text-xs text-muted-foreground mb-1 block">End</label>
           <input
             type="time"
             value={endTime}
@@ -158,7 +158,7 @@ export function ManualEntry() {
       </div>
 
       <Button className="w-full" onClick={handleSubmit}>
-        Registrar entrada
+        Log entry
       </Button>
     </div>
   );

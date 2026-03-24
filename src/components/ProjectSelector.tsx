@@ -51,7 +51,7 @@ export function ProjectSelector({ selectedProject, selectedTask, onProjectChange
       {/* Task selector */}
       {selectedProject && tasks && tasks.length > 0 && (
         <div className="w-full flex flex-wrap items-center gap-2 mt-1">
-          <span className="text-xs text-muted-foreground">Tarea:</span>
+          <span className="text-xs text-muted-foreground">Task:</span>
           {tasks.map((t) => (
             <button
               key={t.id}
@@ -67,7 +67,7 @@ export function ProjectSelector({ selectedProject, selectedTask, onProjectChange
           ))}
           {!showNewTask && (
             <button onClick={() => setShowNewTask(true)} className="text-xs text-muted-foreground hover:text-primary flex items-center gap-0.5">
-              <Plus className="h-3 w-3" /> Nueva
+              <Plus className="h-3 w-3" /> New
             </button>
           )}
         </div>
@@ -78,15 +78,15 @@ export function ProjectSelector({ selectedProject, selectedTask, onProjectChange
         <div className="w-full flex items-center gap-2 mt-1">
           <input
             type="text"
-            placeholder="Nombre de la tarea..."
+            placeholder="Task name..."
             value={newTask}
             onChange={(e) => setNewTask(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreateTask()}
             className="text-sm bg-secondary/50 rounded-lg px-3 py-1.5 flex-1 focus:outline-none focus:ring-1 focus:ring-primary"
             autoFocus
           />
-          <button onClick={handleCreateTask} className="text-xs text-primary font-medium">Crear</button>
-          <button onClick={() => setShowNewTask(false)} className="text-xs text-muted-foreground">Cancelar</button>
+          <button onClick={handleCreateTask} className="text-xs text-primary font-medium">Create</button>
+          <button onClick={() => setShowNewTask(false)} className="text-xs text-muted-foreground">Cancel</button>
         </div>
       )}
     </div>

@@ -64,7 +64,7 @@ export function formatTimer(seconds: number): string {
 }
 
 export function formatTime(date: string | Date): string {
-  return new Date(date).toLocaleTimeString("es-CL", {
+  return new Date(date).toLocaleTimeString("en-NZ", {
     hour: "2-digit",
     minute: "2-digit",
     timeZone: TZ,
@@ -72,7 +72,7 @@ export function formatTime(date: string | Date): string {
 }
 
 export function formatDateShort(date: Date): string {
-  return date.toLocaleDateString("es-CL", {
+  return date.toLocaleDateString("en-NZ", {
     weekday: "short",
     day: "numeric",
     month: "short",

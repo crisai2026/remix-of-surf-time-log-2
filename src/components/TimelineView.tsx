@@ -56,7 +56,7 @@ export function TimelineView() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-foreground">Hoy</h2>
+        <h2 className="text-base font-semibold text-foreground">Today</h2>
         <span className="text-sm text-muted-foreground flex items-center gap-1.5">
           <Clock className="h-3.5 w-3.5" />
           {formatDuration(totalSeconds)}
@@ -65,8 +65,8 @@ export function TimelineView() {
 
       {!entries || entries.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p className="text-sm">Sin registros hoy</p>
-          <p className="text-xs mt-1">Inicia el timer o agrega una entrada manual</p>
+          <p className="text-sm">No entries today</p>
+          <p className="text-xs mt-1">Start the timer or add a manual entry</p>
         </div>
       ) : (
         <div className="space-y-1">
@@ -93,11 +93,11 @@ export function TimelineView() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-foreground truncate">
-                      {entry.description || task?.name || "Sin descripción"}
+                      {entry.description || task?.name || "No description"}
                     </span>
                     {entry.is_running && (
                       <span className="text-[10px] uppercase tracking-wider text-primary font-medium">
-                        En curso
+                        Running
                       </span>
                     )}
                   </div>

@@ -52,10 +52,10 @@ export function EditEntryDialog({ entry, open, onOpenChange }: EditEntryDialogPr
 
     updateEntry.mutate(updates, {
       onSuccess: () => {
-        toast.success("Entrada actualizada");
+        toast.success("Entry updated");
         onOpenChange(false);
       },
-      onError: () => toast.error("Error al actualizar"),
+      onError: () => toast.error("Error updating entry"),
     });
   };
 
@@ -63,21 +63,21 @@ export function EditEntryDialog({ entry, open, onOpenChange }: EditEntryDialogPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-sm">Editar entrada</DialogTitle>
+          <DialogTitle className="text-sm">Edit entry</DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground">Descripción</label>
+            <label className="text-xs text-muted-foreground">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              placeholder="Sin descripción"
+              placeholder="No description"
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Proyecto</label>
+            <label className="text-xs text-muted-foreground">Project</label>
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
@@ -90,7 +90,7 @@ export function EditEntryDialog({ entry, open, onOpenChange }: EditEntryDialogPr
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Inicio</label>
+              <label className="text-xs text-muted-foreground">Start</label>
               <input
                 type="datetime-local"
                 value={startTime}
@@ -99,7 +99,7 @@ export function EditEntryDialog({ entry, open, onOpenChange }: EditEntryDialogPr
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Fin</label>
+              <label className="text-xs text-muted-foreground">End</label>
               <input
                 type="datetime-local"
                 value={endTime}
@@ -113,7 +113,7 @@ export function EditEntryDialog({ entry, open, onOpenChange }: EditEntryDialogPr
             disabled={updateEntry.isPending}
             className="w-full py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            {updateEntry.isPending ? "Guardando…" : "Guardar"}
+            {updateEntry.isPending ? "Saving…" : "Save"}
           </button>
         </div>
       </DialogContent>

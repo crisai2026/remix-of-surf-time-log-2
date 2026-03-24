@@ -23,7 +23,7 @@ export function ThemeSelector() {
       <DropdownMenuTrigger asChild>
         <button
           className="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
-          title="Cambiar tema"
+          title="Change theme"
         >
           <Palette className="h-4 w-4" />
         </button>

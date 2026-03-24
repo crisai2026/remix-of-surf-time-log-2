@@ -37,10 +37,10 @@ export function WeeklyTrendChart({ weeks }: Props) {
     <div className="rounded-xl bg-card border border-border p-3">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
-          <h3 className="text-xs font-semibold">tendencia semanal</h3>
-          <InfoTooltip text="Cuántas sesiones de motor arrancaste cada semana. Si la línea sube, estás siendo más consistente." />
+          <h3 className="text-xs font-semibold">weekly trend</h3>
+          <InfoTooltip text="How many engine sessions you started each week. If the line goes up, you're being more consistent." />
         </div>
-        <span className="text-[10px] text-muted-foreground">sesiones por semana</span>
+        <span className="text-[10px] text-muted-foreground">sessions per week</span>
       </div>
 
       <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" style={{ maxHeight: 140 }}>

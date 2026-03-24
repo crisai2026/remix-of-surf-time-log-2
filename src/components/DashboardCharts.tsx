@@ -99,7 +99,7 @@ export function DashboardCharts() {
     const totalSec = dayEntries?.reduce((sum, e) => sum + (e.duration_seconds || 0), 0) || 0;
     const d = new Date(date + "T12:00:00");
     return {
-      day: d.toLocaleDateString("es-CL", { weekday: "short" }),
+      day: d.toLocaleDateString("en-NZ", { weekday: "short" }),
       date,
       hours: +(totalSec / 3600).toFixed(1),
       isToday: date === todayStr,
@@ -114,7 +114,7 @@ export function DashboardCharts() {
   const daysWithData = weekDates.filter(d => weekEntries?.some(e => toNZDate(e.start_time) === d)).length;
   const avgDaily = daysWithData > 0 ? Math.round(weekTotal / daysWithData) : 0;
 
-  const streakLabel = (streakData || 0) === 1 ? "1 día" : `${streakData || 0} días`;
+  const streakLabel = (streakData || 0) === 1 ? "1 day" : `${streakData || 0} days`;
 
   const fmt = (seconds: number) => {
     if (seconds === 0) return "—";
@@ -217,7 +217,7 @@ export function DashboardCharts() {
   const weekLabel = (() => {
     const s = new Date(weekStart + "T12:00:00");
     const e = new Date(weekEnd + "T12:00:00");
-    return `${s.toLocaleDateString("es-CL", { day: "numeric", month: "short" })} – ${e.toLocaleDateString("es-CL", { day: "numeric", month: "short" })}`;
+    return `${s.toLocaleDateString("en-NZ", { day: "numeric", month: "short" })} – ${e.toLocaleDateString("en-NZ", { day: "numeric", month: "short" })}`;
   })();
 
   return (
@@ -239,16 +239,16 @@ export function DashboardCharts() {
 
       {/* Row 1 — Metrics */}
       <div className="grid grid-cols-4 gap-2">
-        <StatCard icon={<Clock className="h-3.5 w-3.5 text-primary" />} label="Hoy" value={fmt(todayTotal)} />
-        <StatCard icon={<TrendingUp className="h-3.5 w-3.5 text-primary" />} label="Semana" value={fmt(weekTotal)} />
-        <StatCard icon={<Activity className="h-3.5 w-3.5 text-primary" />} label="Promedio" value={fmt(avgDaily)} />
-        <StatCard icon={<Flame className="h-3.5 w-3.5 text-primary" />} label="Racha" value={streakLabel} />
+        <StatCard icon={<Clock className="h-3.5 w-3.5 text-primary" />} label="Today" value={fmt(todayTotal)} />
+        <StatCard icon={<TrendingUp className="h-3.5 w-3.5 text-primary" />} label="Week" value={fmt(weekTotal)} />
+        <StatCard icon={<Activity className="h-3.5 w-3.5 text-primary" />} label="Average" value={fmt(avgDaily)} />
+        <StatCard icon={<Flame className="h-3.5 w-3.5 text-primary" />} label="Streak" value={streakLabel} />
       </div>
 
       {/* Row 2 — Motores + Goals merged */}
       {motorGoalData.length > 0 && (
         <div className="rounded-xl bg-card border border-border p-3">
-          <h3 className="text-xs font-semibold mb-2">Motores</h3>
+          <h3 className="text-xs font-semibold mb-2">Engines</h3>
           <div className="space-y-2.5">
             {motorGoalData.map(m => (
               <div key={m.label}>
@@ -278,7 +278,7 @@ export function DashboardCharts() {
       <div className="grid grid-cols-2 gap-3">
         {/* Donut */}
         <div className="rounded-xl bg-card border border-border p-3">
-          <h3 className="text-xs font-semibold mb-2">Por proyecto</h3>
+          <h3 className="text-xs font-semibold mb-2">By project</h3>
           {projectData.length > 0 ? (
             <>
               <div className="w-[100px] h-[100px] mx-auto">
@@ -302,13 +302,13 @@ export function DashboardCharts() {
               </div>
             </>
           ) : (
-            <p className="text-[11px] text-muted-foreground text-center py-6">Sin datos</p>
+            <p className="text-[11px] text-muted-foreground text-center py-6">No data</p>
           )}
         </div>
 
         {/* Bar chart */}
         <div className="rounded-xl bg-card border border-border p-3">
-          <h3 className="text-xs font-semibold mb-2">Semana</h3>
+          <h3 className="text-xs font-semibold mb-2">Week</h3>
           <ResponsiveContainer width="100%" height={110}>
             <BarChart data={dailyData} onClick={(state) => {
               if (state?.activePayload?.[0]) {
@@ -332,7 +332,7 @@ export function DashboardCharts() {
           {selectedBarDay && barDayEntries.length > 0 && (
             <div className="mt-2 pt-2 border-t border-border">
               <p className="text-[10px] text-muted-foreground mb-1">
-                {new Date(selectedBarDay + "T12:00:00").toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "short" })}
+                {new Date(selectedBarDay + "T12:00:00").toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "short" })}
               </p>
               <div className="space-y-0.5">
                 {barDayEntries.map(e => (
@@ -353,7 +353,7 @@ export function DashboardCharts() {
 
       {/* Row 4 — Heatmap */}
       <div className="rounded-xl bg-card border border-border p-3">
-        <h3 className="text-xs font-semibold mb-2">Carga semanal</h3>
+        <h3 className="text-xs font-semibold mb-2">Weekly load</h3>
         <div className="flex gap-[3px] overflow-x-auto pb-1">
           <div className="flex flex-col gap-[3px] mr-1 shrink-0">
             {["L", "M", "X", "J", "V", "S", "D"].map(d => (
@@ -388,7 +388,7 @@ export function DashboardCharts() {
         {selectedDay && selectedDayBreakdown.length > 0 && (
           <div className="mt-3 pt-3 border-t border-border">
             <p className="text-[10px] text-muted-foreground mb-2">
-              {new Date(selectedDay + "T12:00:00").toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long" })}
+              {new Date(selectedDay + "T12:00:00").toLocaleDateString("en-NZ", { weekday: "long", day: "numeric", month: "long" })}
             </p>
             <div className="flex h-4 rounded-full overflow-hidden">
               {selectedDayBreakdown.map((p, i) => {
@@ -414,15 +414,15 @@ export function DashboardCharts() {
 
       {/* Row 5 — Today's entries */}
       <div className="rounded-xl bg-card border border-border p-3">
-        <h3 className="text-xs font-semibold mb-2">Hoy</h3>
+        <h3 className="text-xs font-semibold mb-2">Today</h3>
         {todayEntries.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground text-center py-3">Sin entradas hoy</p>
+          <p className="text-[11px] text-muted-foreground text-center py-3">No entries today</p>
         ) : (
           <div className="space-y-1">
             {todayEntries.map(e => (
               <div key={e.id} className="group flex items-center gap-2 text-[11px] py-1">
                 <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: (e.projects as any)?.color || "hsl(var(--primary))" }} />
-                <span className="flex-1 truncate text-muted-foreground">{e.description || (e.projects as any)?.name || "Sin descripción"}</span>
+                <span className="flex-1 truncate text-muted-foreground">{e.description || (e.projects as any)?.name || "No description"}</span>
                 <span className="tabular-nums text-foreground">{formatDuration(e.duration_seconds || 0)}</span>
                 <button
                   onClick={() => setEditEntry(e)}

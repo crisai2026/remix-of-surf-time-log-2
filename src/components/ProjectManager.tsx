@@ -35,7 +35,7 @@ export function ProjectManager() {
     <div className="space-y-8">
       {/* Projects + Tasks */}
       <section className="space-y-3">
-        <h2 className="text-base font-semibold text-foreground">Motores</h2>
+        <h2 className="text-base font-semibold text-foreground">Engines</h2>
         <div className="space-y-2">
           {projects?.map((p) => (
             <ProjectRow key={p.id} project={p} />
@@ -51,7 +51,7 @@ export function ProjectManager() {
           />
           <input
             type="text"
-            placeholder="Nuevo proyecto..."
+            placeholder="New project..."
             value={newProjectName}
             onChange={(e) => setNewProjectName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreateProject()}
@@ -61,7 +61,7 @@ export function ProjectManager() {
             onClick={handleCreateProject}
             className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
           >
-            Agregar
+            Add
           </button>
         </div>
       </section>
@@ -70,7 +70,7 @@ export function ProjectManager() {
       <section className="space-y-3">
         <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
           <Tag className="h-4 w-4" />
-          Etiquetas
+          Tags
         </h2>
 
         <div className="flex flex-wrap gap-1.5">
@@ -100,7 +100,7 @@ export function ProjectManager() {
           />
           <input
             type="text"
-            placeholder="Nueva etiqueta..."
+            placeholder="New tag..."
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreateTag()}
@@ -110,7 +110,7 @@ export function ProjectManager() {
             onClick={handleCreateTag}
             className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
           >
-            Agregar
+            Add
           </button>
         </div>
       </section>
@@ -177,7 +177,7 @@ function ProjectRow({ project }: { project: any }) {
             />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Meta semanal:</span>
+            <span className="text-xs text-muted-foreground">Weekly goal:</span>
             <input
               type="number"
               min="0"
@@ -186,10 +186,10 @@ function ProjectRow({ project }: { project: any }) {
               onChange={(e) => setEditGoal(e.target.value)}
               className="w-16 bg-transparent text-sm text-center focus:outline-none border-b border-border tabular-nums"
             />
-            <span className="text-xs text-muted-foreground">horas</span>
+            <span className="text-xs text-muted-foreground">hours</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Motor #:</span>
+            <span className="text-xs text-muted-foreground">Engine #:</span>
             <input
               type="number"
               min="1"
@@ -198,7 +198,7 @@ function ProjectRow({ project }: { project: any }) {
               placeholder="—"
               className="w-12 bg-transparent text-sm text-center focus:outline-none border-b border-border tabular-nums"
             />
-            <span className="text-[10px] text-muted-foreground">(vacío = no es motor)</span>
+            <span className="text-[10px] text-muted-foreground">(empty = not an engine)</span>
           </div>
           <div className="flex items-center gap-2 justify-end">
             <button onClick={handleCancel} className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground">
@@ -222,10 +222,10 @@ function ProjectRow({ project }: { project: any }) {
             <span className="text-sm font-medium text-foreground">{project.name}</span>
             {(project.weekly_goal_hours || 0) > 0 && (
               <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
-                {project.weekly_goal_hours}h/sem
+                {project.weekly_goal_hours}h/wk
               </span>
             )}
-            <span className="text-xs text-muted-foreground ml-auto">{tasks?.length || 0} tareas</span>
+            <span className="text-xs text-muted-foreground ml-auto">{tasks?.length || 0} tasks</span>
           </button>
           <button
             onClick={() => setEditing(true)}
@@ -234,7 +234,7 @@ function ProjectRow({ project }: { project: any }) {
             <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() => { if (confirm("¿Eliminar proyecto y todas sus tareas?")) deleteProject.mutate(project.id); }}
+            onClick={() => { if (confirm("Delete project and all its tasks?")) deleteProject.mutate(project.id); }}
             className="p-3 text-muted-foreground hover:text-destructive transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -259,7 +259,7 @@ function ProjectRow({ project }: { project: any }) {
             <Plus className="h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Nueva tarea..."
+              placeholder="New task..."
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}

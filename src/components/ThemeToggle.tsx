@@ -2,9 +2,9 @@ import { Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 
 const options = [
-  { value: "light" as const, icon: Sun, label: "Claro" },
-  { value: "system" as const, icon: Monitor, label: "Sistema" },
-  { value: "dark" as const, icon: Moon, label: "Oscuro" },
+  { value: "light" as const, icon: Sun, label: "Light" },
+  { value: "system" as const, icon: Monitor, label: "System" },
+  { value: "dark" as const, icon: Moon, label: "Dark" },
 ];
 
 export function ThemeToggle() {
@@ -21,7 +21,7 @@ export function ThemeToggle() {
               ? "bg-card text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
           }`}
-          title={value === "light" ? "Claro" : value === "dark" ? "Oscuro" : "Sistema"}
+          title={value === "light" ? "Light" : value === "dark" ? "Dark" : "System"}
         >
           <Icon className="h-3 w-3" />
         </button>

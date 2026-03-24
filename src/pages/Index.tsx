@@ -9,21 +9,23 @@ import { NotificationSettings } from "@/components/NotificationSettings";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { AlignmentAhora } from "@/components/AlignmentAhora";
 import { AlignmentSemana } from "@/components/AlignmentSemana";
-import { BarChart3, Clock, FolderOpen } from "lucide-react";
+import { BarChart3, Clock, FolderOpen, LogOut } from "lucide-react";
 import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { getThemeContent } from "@/lib/themeContent";
 import { ActivityLog } from "@/components/ActivityLog";
+import { useAppContext } from "@/contexts/AppContext";
 
 type AppMode = "tracker" | "alignment" | "log";
 type TrackerTab = "timer" | "dashboard" | "projects";
-type AlignmentTab = "ahora" | "semana";
+type AlignmentTab = "now" | "week";
 
 export default function Index() {
   const [mode, setMode] = useState<AppMode>("tracker");
   const [trackerTab, setTrackerTab] = useState<TrackerTab>("timer");
-  const [alignmentTab, setAlignmentTab] = useState<AlignmentTab>("ahora");
+  const [alignmentTab, setAlignmentTab] = useState<AlignmentTab>("now");
   const { visualTheme } = useVisualTheme();
   const content = getThemeContent(visualTheme);
+  const { user, signOut } = useAppContext();
 
   return (
     <div className="min-h-screen bg-background pb-14">
@@ -34,8 +36,17 @@ export default function Index() {
             {content.easterEgg && (
               <span className="text-[11px] text-muted-foreground/70 tracking-wider truncate">{content.easterEgg}</span>
             )}
-            <div className="ml-auto shrink-0">
+            <div className="ml-auto shrink-0 flex items-center gap-1">
               <ThemeSelector />
+              {user && (
+                <button
+                  onClick={() => signOut()}
+                  className="p-1.5 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+                  title="Log out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -62,7 +73,7 @@ export default function Index() {
               <NavIcon active={trackerTab === "timer"} onClick={() => setTrackerTab("timer")} title="Timer">
                 <Clock className="h-3.5 w-3.5" />
               </NavIcon>
-              <NavIcon active={trackerTab === "projects"} onClick={() => setTrackerTab("projects")} title="Motores">
+              <NavIcon active={trackerTab === "projects"} onClick={() => setTrackerTab("projects")} title="Engines">
                 <FolderOpen className="h-3.5 w-3.5" />
               </NavIcon>
               <NavIcon active={trackerTab === "dashboard"} onClick={() => setTrackerTab("dashboard")} title="Dashboard">
@@ -72,20 +83,20 @@ export default function Index() {
           ) : mode === "alignment" ? (
             <div className="flex gap-1 mt-2 bg-secondary/50 rounded-lg p-0.5 w-fit">
               <button
-                onClick={() => setAlignmentTab("ahora")}
+                onClick={() => setAlignmentTab("now")}
                 className={`text-xs px-3 py-1.5 rounded-md transition-all ${
-                  alignmentTab === "ahora" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                  alignmentTab === "now" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
                 }`}
               >
-                Ahora
+                Now
               </button>
               <button
-                onClick={() => setAlignmentTab("semana")}
+                onClick={() => setAlignmentTab("week")}
                 className={`text-xs px-3 py-1.5 rounded-md transition-all ${
-                  alignmentTab === "semana" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                  alignmentTab === "week" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
                 }`}
               >
-                Mi semana
+                My week
               </button>
             </div>
           ) : null}
@@ -106,7 +117,7 @@ export default function Index() {
             <DashboardCharts />
           )
         ) : mode === "alignment" ? (
-          alignmentTab === "ahora" ? (
+          alignmentTab === "now" ? (
             <AlignmentAhora />
           ) : (
             <AlignmentSemana />

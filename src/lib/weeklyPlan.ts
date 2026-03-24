@@ -151,7 +151,7 @@ export function getTodayPlan(): PlanBlock[] {
 }
 
 export function getDayName(dayIndex: number): string {
-  const names = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  const names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   return names[dayIndex] || "";
 }
 

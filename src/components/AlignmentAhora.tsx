@@ -105,12 +105,12 @@ export function AlignmentAhora() {
   const isOutOfPlan = running?.is_out_of_plan === true;
   const displayCategory = isOutOfPlan ? null : (activeCategory || currentBlock?.category || null);
   const displayActivity = isOutOfPlan
-    ? (running?.description || "Fuera de plan")
+    ? (running?.description || "Off plan")
     : activeCategory
       ? (ACTIVITY_OPTIONS.find(a => a.category === activeCategory)?.label ||
          CATEGORY_TO_PROJECT[activeCategory] ||
          (running?.projects as any)?.name || activeCategory)
-      : currentBlock?.activity || "Tiempo libre";
+      : currentBlock?.activity || "Free time";
 
   const plannedCategory = currentBlock?.category || null;
   const isDeviated = !isOutOfPlan && activeCategory !== null && activeCategory !== plannedCategory;
@@ -150,7 +150,7 @@ export function AlignmentAhora() {
       .single();
 
     if (error) {
-      toast.error("Error al crear proyecto");
+      toast.error("Error creating project");
       return null;
     }
 
@@ -227,7 +227,7 @@ export function AlignmentAhora() {
           {dayName}
         </h2>
         <p className="text-xs text-muted-foreground mt-0.5">
-          {today.toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })}
+          {today.toLocaleDateString("en-NZ", { day: "numeric", month: "long", year: "numeric" })}
         </p>
       </div>
 
@@ -242,7 +242,7 @@ export function AlignmentAhora() {
         }}
       >
         <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-3">
-          {isOutOfPlan ? "FUERA DE PLAN" : "AHORA"}
+          {isOutOfPlan ? "OFF PLAN" : "NOW"}
         </p>
 
         <h3
@@ -282,7 +282,7 @@ export function AlignmentAhora() {
               {formatTimer(elapsed)}
             </span>
             {isPaused && (
-              <span className="block text-[10px] uppercase tracking-wider text-primary font-medium mt-0.5">Pausado</span>
+              <span className="block text-[10px] uppercase tracking-wider text-primary font-medium mt-0.5">Paused</span>
             )}
           </div>
 
@@ -322,14 +322,14 @@ export function AlignmentAhora() {
         </div>
       </button>
 
-      <p className="text-[10px] text-center text-muted-foreground">toca para cambiar actividad</p>
+      <p className="text-[10px] text-center text-muted-foreground">tap to change activity</p>
 
       {/* Next block */}
       {nextBlock && (
         <div className="rounded-xl bg-secondary/50 border border-border p-3 flex items-center gap-3">
           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Siguiente</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Next</p>
             <p className="text-sm font-medium truncate">{nextBlock.activity}</p>
           </div>
           <span className="text-xs text-muted-foreground tabular-nums">{nextBlock.start} – {nextBlock.end}</span>
@@ -339,7 +339,7 @@ export function AlignmentAhora() {
       {/* Day timeline */}
       {todayPlan.length > 0 && (
         <div>
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-2">HOY</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-2">TODAY</p>
           <div className="space-y-0.5">
             {todayPlan.map((block, i) => {
               const blockEnd = timeToMinutes(block.end);
@@ -374,8 +374,8 @@ export function AlignmentAhora() {
 
       {dayIndex > 4 && (
         <div className="text-center py-8">
-          <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'DM Serif Display', serif" }}>Fin de semana</p>
-          <p className="text-xs text-muted-foreground mt-1">No hay plan programado</p>
+          <p className="text-lg font-semibold text-foreground" style={{ fontFamily: "'DM Serif Display', serif" }}>Weekend</p>
+          <p className="text-xs text-muted-foreground mt-1">No plan scheduled</p>
         </div>
       )}
 
@@ -383,7 +383,7 @@ export function AlignmentAhora() {
       <Sheet open={showSwitcher} onOpenChange={setShowSwitcher}>
         <SheetContent side="bottom" className="rounded-t-2xl max-h-[80vh] overflow-y-auto">
           <div className="w-10 h-1 rounded-full bg-muted mx-auto mb-4" />
-          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-center mb-4">¿QUÉ ESTÁS HACIENDO?</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-center mb-4">WHAT ARE YOU DOING?</p>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
             {ACTIVITY_OPTIONS.map(opt => (
@@ -415,13 +415,13 @@ export function AlignmentAhora() {
                 <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
                   <Plus className="h-3 w-3" />
                 </div>
-                <span className="text-sm">Fuera de plan</span>
+                <span className="text-sm">Off plan</span>
               </button>
             ) : (
               <div className="space-y-2">
                 <input
                   type="text"
-                  placeholder="Doctor, emergencia, trámite…"
+                  placeholder="Doctor, emergency, errand…"
                   value={outOfPlanText}
                   onChange={(e) => setOutOfPlanText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleOutOfPlan()}
@@ -432,7 +432,7 @@ export function AlignmentAhora() {
                   onClick={handleOutOfPlan}
                   className="w-full py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium"
                 >
-                  Confirmar
+                  Confirm
                 </button>
               </div>
             )}
@@ -442,7 +442,7 @@ export function AlignmentAhora() {
             onClick={() => setShowSwitcher(false)}
             className="w-full text-center text-xs text-muted-foreground mt-4 py-2"
           >
-            Cancelar
+            Cancel
           </button>
         </SheetContent>
       </Sheet>

@@ -7,7 +7,7 @@ interface Props {
   todayDayIndex: number; // 0=Mon .. 4=Fri
 }
 
-const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
 export function SessionsPerDayChart({ planned, actual, todayDayIndex }: Props) {
   const maxVal = useMemo(() => Math.max(...planned, ...actual, 1), [planned, actual]);
@@ -44,10 +44,10 @@ export function SessionsPerDayChart({ planned, actual, todayDayIndex }: Props) {
     <div className="rounded-xl bg-card border border-border p-3">
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
-          <h3 className="text-xs font-semibold">sesiones por día</h3>
-          <InfoTooltip text="Cada punto muestra cuántos bloques de motor arrancaste ese día. La línea punteada es lo que tenías planificado." />
+          <h3 className="text-xs font-semibold">sessions per day</h3>
+          <InfoTooltip text="Each point shows how many engine blocks you started that day. The dashed line is what you had planned." />
         </div>
-        <span className="text-[10px] text-muted-foreground">meta vs real</span>
+        <span className="text-[10px] text-muted-foreground">goal vs actual</span>
       </div>
 
       <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" style={{ maxHeight: 140 }}>
