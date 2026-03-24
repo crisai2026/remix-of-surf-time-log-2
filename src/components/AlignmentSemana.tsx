@@ -241,9 +241,9 @@ export function AlignmentSemana() {
         return d >= weekStart && d <= weekEnd && pName && motorNames.has(pName);
       }).length;
       if (sessions > 0 || offset === 0) {
-        const labels: Record<number, string> = { '-3': 'Hace 3 sem', '-2': 'Hace 2 sem', '-1': 'Sem pasada', '0': 'Esta sem' };
+        const labelMap: Record<string, string> = { '-3': 'Hace 3 sem', '-2': 'Hace 2 sem', '-1': 'Sem pasada', '0': 'Esta sem' };
         weeks.push({
-          label: labels[String(offset) as keyof typeof labels] || `Sem ${4 + offset}`,
+          label: labelMap[String(offset)] || `Sem ${4 + offset}`,
           sessions,
           isCurrent: offset === 0,
         });
