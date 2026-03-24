@@ -253,7 +253,7 @@ export function AlignmentAhora() {
         </h3>
 
         {currentBlock && !isOutOfPlan && (
-          <p className="text-xs mb-2" style={{ color: style?.textColor || "hsl(var(--muted-foreground))", opacity: 0.7 }}>
+          <p className="text-xs mb-2" style={{ color: activeColor || "hsl(var(--muted-foreground))", opacity: 0.7 }}>
             {currentBlock.start} – {currentBlock.end}
           </p>
         )}
