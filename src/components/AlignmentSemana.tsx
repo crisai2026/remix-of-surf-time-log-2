@@ -84,6 +84,17 @@ export function AlignmentSemana() {
       .sort((a, b) => (a.motor_number || 0) - (b.motor_number || 0));
   }, [projects]);
 
+  // Build category → DB color lookup
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (!projects) return map;
+    for (const p of projects) {
+      const cat = getProjectCategory(p.name);
+      if (cat) map[cat] = p.color;
+    }
+    return map;
+  }, [projects]);
+
   // Calculate alignment per day using motor projects
   const dayAlignments = useMemo(() => {
     if (!weekEntries || motorProjects.length === 0) return [];
