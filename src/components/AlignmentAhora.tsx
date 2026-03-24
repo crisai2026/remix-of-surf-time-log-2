@@ -82,6 +82,17 @@ export function AlignmentAhora() {
   const dayName = getDayName(dayIndex);
   const today = new Date();
 
+  // Build category → DB project color lookup
+  const categoryColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    if (!projects) return map;
+    for (const p of projects) {
+      const cat = getProjectCategory(p.name);
+      if (cat) map[cat] = p.color;
+    }
+    return map;
+  }, [projects]);
+
   // Derive active category from running entry (case-insensitive)
   const activeCategory = useMemo(() => {
     if (!running) return null;
