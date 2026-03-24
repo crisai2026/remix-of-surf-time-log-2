@@ -37,7 +37,6 @@ export function Timer() {
     const pausedSec = (running as any).paused_seconds || 0;
     const tick = () => {
       if ((running as any).paused_at) {
-        // When paused, freeze at the moment of pause
         const pausedAt = new Date((running as any).paused_at).getTime();
         const totalElapsed = Math.floor((pausedAt - new Date(running.start_time).getTime()) / 1000);
         setElapsed(totalElapsed - pausedSec);
@@ -95,7 +94,7 @@ export function Timer() {
                 {formatTimer(elapsed)}
               </div>
               {isPaused && (
-                <span className="text-[10px] uppercase tracking-wider text-primary font-medium">Pausado</span>
+                <span className="text-[10px] uppercase tracking-wider text-primary font-medium">Paused</span>
               )}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 {runningProject && (
@@ -130,7 +129,7 @@ export function Timer() {
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="¿En qué estás trabajando?"
+              placeholder="What are you working on?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleStart()}
@@ -152,7 +151,7 @@ export function Timer() {
               {currentProject && (
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentProject.color }} />
               )}
-              <span>{currentProject?.name || "Seleccionar proyecto"}</span>
+              <span>{currentProject?.name || "Select project"}</span>
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
 
