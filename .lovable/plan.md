@@ -1,36 +1,20 @@
 
 
-## Plan: Add "Log" View to MAREA
+## Plan: Add Familia as Motor 4 in Weekly Plan
 
-### Summary
-Add a third top-level navigation option "Log" alongside "Tracker" and "Alignment". The Log view shows a chronological list of all time entries, with filters and day-grouped layout.
+**Problem:** The DB project "Familia" has `motor_number=4` and `weekly_goal_hours=3.5`, but the weekly plan config doesn't treat it as a motor. The `MOTOR_GOALS` object only has motors 1-3, and the `familia` blocks in `WEEKLY_PLAN` don't have `motor: 4`. This means Familia time entries are counted as "actual" motor time but have 0 planned minutes, skewing the 62% calculation.
 
-### Changes
+**File: `src/lib/weeklyPlan.ts`**
 
-**1. `src/pages/Index.tsx`** — Add "Log" mode
-- Extend `AppMode` type: `"tracker" | "alignment" | "log"`
-- Add third button "Log" to the top-level toggle
-- Render `<ActivityLog />` when `mode === "log"`
-- No sub-navigation needed for Log mode
+1. **Add Motor 4 to `MOTOR_GOALS`:** Add entry `4: { label: "Motor 4 · Familia", category: "familia", weeklyHours: 3.5 }`
 
-**2. `src/components/ActivityLog.tsx`** — New file
-- **Data**: Query `time_entries` with `projects(*)` join from Supabase, filtered by selected time period
-- **Filters row**: Horizontal pills for time period ("Hoy", "Esta semana", "Este mes", "Todo" — default "Esta semana") + category dropdown with color dots (default "Todas")
-- **Grouping**: Group entries by NZ date, sorted most recent day first. Within each day, sort by `start_time` ascending
-- **Day header**: Full date in Spanish (e.g. "Lunes 24 de Marzo") with total hours on the right
-- **Entry row**: Color dot (from `project.color`), project name, time range, duration, optional "fuera de plan" badge, optional planned category mismatch text
-- **Empty state**: "Sin registros" with muted icon
-- **Time formatting**: Reuse existing `formatTime`, `toNZDate`, `nzMidnightToUTC` utilities
-- **Date range calculation**: "Hoy" = today NZ, "Esta semana" = current week Mon-Sun, "Este mes" = 1st of month to end, "Todo" = no filter
+2. **Add `motorLabel` to familia in `CATEGORY_STYLES`:** Add `motorLabel: "Motor 4 · Familia"` to the existing familia style entry.
 
-### Technical details
-- Time period filter controls the Supabase query's `gte`/`lt` on `start_time` (converted to UTC via `nzMidnightToUTC`)
-- Category filter is client-side on the fetched data (filter by `project_id`)
-- Day grouping uses `toNZDate()` to bucket entries
-- Spanish day/month names via `toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long", timeZone: "Pacific/Auckland" })`
-- Duration display uses existing `formatDuration`
+3. **Add `motor: 4` to familia blocks in `WEEKLY_PLAN`:**
+   - Monday: "Prep reunión" (09:30-11:00) → add `motor: 4`
+   - Tuesday: "Reunión hermanos" (09:30-11:30) → add `motor: 4`
 
-### Files
-1. `src/pages/Index.tsx` — modify (add Log mode + toggle button)
-2. `src/components/ActivityLog.tsx` — create new
+4. **Add Familia to `ACTIVITY_OPTIONS`:** Update the existing "Familia" entry to include `motor: 4`.
+
+No other files need changes — the dashboard already dynamically reads from `MOTOR_GOALS` and processes all motors.
 
