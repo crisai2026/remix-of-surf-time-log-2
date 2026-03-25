@@ -187,14 +187,14 @@ export function AlignmentAhora() {
   }, [running]);
 
   const findOrCreateProject = async (category: string): Promise<string | null> => {
-    const projectName = CATEGORY_TO_PROJECT[category];
+    const projectName = activeCatToProject[category];
     if (!projectName) return null;
 
     // Case-insensitive match
     const existing = projects?.find(p => p.name.toLowerCase() === projectName.toLowerCase());
     if (existing) return existing.id;
 
-    const style = CATEGORY_STYLES[category];
+    const style = activeCatStyles[category];
     const { data, error } = await supabase
       .from("projects")
       .insert({ name: projectName, color: style?.textColor || "#888" })
