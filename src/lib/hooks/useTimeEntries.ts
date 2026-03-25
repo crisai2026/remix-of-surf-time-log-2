@@ -1,18 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { nzMidnightToUTC } from "@/lib/formatTime";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_TIME_ENTRIES } from "@/lib/demoData";
 
 export function useTimeEntries(date?: string) {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["time_entries", date],
+    queryKey: ["time_entries", date, mode],
     queryFn: async () => {
+      if (mode === "demo") return DEMO_TIME_ENTRIES;
       let q = supabase
         .from("time_entries")
         .select("*, projects(*), tasks(*)")
         .order("start_time", { ascending: false });
 
       if (date) {
-        // Convert NZDT date boundaries to UTC for proper filtering
         const startUTC = nzMidnightToUTC(date);
         const nextDay = new Date(new Date(date + "T12:00:00").getTime());
         nextDay.setDate(nextDay.getDate() + 1);
@@ -25,14 +28,16 @@ export function useTimeEntries(date?: string) {
       if (error) throw error;
       return data;
     },
-    refetchInterval: 10000,
+    refetchInterval: mode === "demo" ? false : 10000,
   });
 }
 
 export function useRunningEntry() {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["running_entry"],
+    queryKey: ["running_entry", mode],
     queryFn: async () => {
+      if (mode === "demo") return null;
       const { data, error } = await supabase
         .from("time_entries")
         .select("*, projects(*), tasks(*)")
@@ -41,7 +46,7 @@ export function useRunningEntry() {
       if (error) throw error;
       return data;
     },
-    refetchInterval: 1000,
+    refetchInterval: mode === "demo" ? false : 1000,
   });
 }
 
@@ -55,7 +60,6 @@ export function useStartTimer() {
       isOutOfPlan?: boolean;
       plannedCategory?: string;
     }) => {
-      // Stop any running entry first
       const { data: runningEntries } = await supabase
         .from("time_entries")
         .select("id, start_time, paused_seconds")
