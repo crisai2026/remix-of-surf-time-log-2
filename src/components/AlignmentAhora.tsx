@@ -5,6 +5,11 @@ import {
   getDayName, CATEGORY_STYLES, ACTIVITY_OPTIONS, CATEGORY_TO_PROJECT,
   timeToMinutes, type PlanBlock,
 } from "@/lib/weeklyPlan";
+import {
+  DEMO_WEEKLY_PLAN, DEMO_CATEGORY_STYLES, DEMO_ACTIVITY_OPTIONS,
+  DEMO_CATEGORY_TO_PROJECT,
+} from "@/lib/demoData";
+import { useAppContext } from "@/contexts/AppContext";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useRunningEntry, useStartTimer, useStopTimer, usePauseTimer, useResumeTimer } from "@/lib/hooks/useTimeEntries";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,14 +19,15 @@ import { formatTimer } from "@/lib/formatTime";
 import { toast } from "sonner";
 
 // Case-insensitive reverse lookup: project name → category
-function buildProjectToCategory(): Record<string, string> {
+function buildProjectToCategory(catToProject: Record<string, string>): Record<string, string> {
   const map: Record<string, string> = {};
-  Object.entries(CATEGORY_TO_PROJECT).forEach(([cat, name]) => {
+  Object.entries(catToProject).forEach(([cat, name]) => {
     map[name.toLowerCase()] = cat;
   });
   return map;
 }
-const PROJECT_TO_CATEGORY = buildProjectToCategory();
+const PROJECT_TO_CATEGORY = buildProjectToCategory(CATEGORY_TO_PROJECT);
+const DEMO_PROJECT_TO_CATEGORY = buildProjectToCategory(DEMO_CATEGORY_TO_PROJECT);
 
 function getProjectCategory(projectName: string): string | null {
   return PROJECT_TO_CATEGORY[projectName.toLowerCase()] || null;
@@ -31,11 +37,12 @@ function useDarkMode() {
   return document.documentElement.classList.contains("dark");
 }
 
-function CategoryBg({ category, children, className = "", selected = false, projectColor }: {
-  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string;
+function CategoryBg({ category, children, className = "", selected = false, projectColor, catStyles }: {
+  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string; catStyles?: Record<string, import("@/lib/weeklyPlan").CategoryStyle>;
 }) {
   const dark = useDarkMode();
-  const style = CATEGORY_STYLES[category];
+  const styles = catStyles || CATEGORY_STYLES;
+  const style = styles[category];
   const color = projectColor || style?.textColor;
   if (!color && !style) return <div className={className}>{children}</div>;
   return (
@@ -61,6 +68,14 @@ export function AlignmentAhora() {
   const pauseTimer = usePauseTimer();
   const resumeTimer = useResumeTimer();
   const queryClient = useQueryClient();
+  const { mode } = useAppContext();
+  const isDemo = mode === "demo";
+
+  // Choose plan data based on mode
+  const activeCatStyles = isDemo ? DEMO_CATEGORY_STYLES : CATEGORY_STYLES;
+  const activeCatToProject = isDemo ? DEMO_CATEGORY_TO_PROJECT : CATEGORY_TO_PROJECT;
+  const activeActivityOptions = isDemo ? DEMO_ACTIVITY_OPTIONS : ACTIVITY_OPTIONS;
+  const activeProjToCat = isDemo ? DEMO_PROJECT_TO_CATEGORY : PROJECT_TO_CATEGORY;
 
   const [elapsed, setElapsed] = useState(0);
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -74,31 +89,68 @@ export function AlignmentAhora() {
     return () => clearInterval(id);
   }, []);
 
-  const currentResult = getCurrentBlock();
-  const currentBlock = currentResult?.block || null;
-  const nextBlock = getNextBlock();
-  const todayPlan = getTodayPlan();
+  // Demo: derive current/next/today from demo plan
   const dayIndex = getCurrentDayIndex();
   const dayName = getDayName(dayIndex);
   const today = new Date();
 
+  const demoDayPlan = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return [];
+    return DEMO_WEEKLY_PLAN[dayIndex];
+  }, [isDemo, dayIndex]);
+
+  const demoCurrentResult = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return null;
+    const nowMin = today.getHours() * 60 + today.getMinutes();
+    for (let i = 0; i < demoDayPlan.length; i++) {
+      const b = demoDayPlan[i];
+      if (nowMin >= timeToMinutes(b.start) && nowMin < timeToMinutes(b.end)) {
+        return { block: b, index: i };
+      }
+    }
+    return null;
+  }, [isDemo, dayIndex, demoDayPlan]);
+
+  const demoNextBlock = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return null;
+    const nowMin = today.getHours() * 60 + today.getMinutes();
+    for (const b of demoDayPlan) {
+      if (timeToMinutes(b.start) > nowMin) return b;
+    }
+    return null;
+  }, [isDemo, dayIndex, demoDayPlan]);
+
+  const currentResult = isDemo ? demoCurrentResult : getCurrentBlock();
+  const currentBlock = currentResult?.block || null;
+  const nextBlock = isDemo ? demoNextBlock : getNextBlock();
+  const todayPlan = isDemo ? demoDayPlan : getTodayPlan();
+
+  const getProjectCat = (name: string): string | null => activeProjToCat[name.toLowerCase()] || null;
+
   // Build category → DB project color lookup
   const categoryColorMap = useMemo(() => {
     const map: Record<string, string> = {};
+    if (isDemo) {
+      // Use demo project colors directly
+      for (const [cat, style] of Object.entries(DEMO_CATEGORY_STYLES)) {
+        map[cat] = style.textColor;
+      }
+      return map;
+    }
     if (!projects) return map;
     for (const p of projects) {
-      const cat = getProjectCategory(p.name);
+      const cat = getProjectCat(p.name);
       if (cat) map[cat] = p.color;
     }
     return map;
-  }, [projects]);
+  }, [projects, isDemo]);
 
   // Derive active category from running entry (case-insensitive)
   const activeCategory = useMemo(() => {
     if (!running) return null;
     const projectName = (running.projects as any)?.name;
     if (!projectName) return null;
-    return getProjectCategory(projectName);
+    return getProjectCat(projectName);
   }, [running]);
 
   // Display info - use description for out-of-plan entries
@@ -107,8 +159,8 @@ export function AlignmentAhora() {
   const displayActivity = isOutOfPlan
     ? (running?.description || "Off plan")
     : activeCategory
-      ? (ACTIVITY_OPTIONS.find(a => a.category === activeCategory)?.label ||
-         CATEGORY_TO_PROJECT[activeCategory] ||
+      ? (activeActivityOptions.find(a => a.category === activeCategory)?.label ||
+         activeCatToProject[activeCategory] ||
          (running?.projects as any)?.name || activeCategory)
       : currentBlock?.activity || "Free time";
 
@@ -135,14 +187,14 @@ export function AlignmentAhora() {
   }, [running]);
 
   const findOrCreateProject = async (category: string): Promise<string | null> => {
-    const projectName = CATEGORY_TO_PROJECT[category];
+    const projectName = activeCatToProject[category];
     if (!projectName) return null;
 
     // Case-insensitive match
     const existing = projects?.find(p => p.name.toLowerCase() === projectName.toLowerCase());
     if (existing) return existing.id;
 
-    const style = CATEGORY_STYLES[category];
+    const style = activeCatStyles[category];
     const { data, error } = await supabase
       .from("projects")
       .insert({ name: projectName, color: style?.textColor || "#888" })
@@ -214,7 +266,7 @@ export function AlignmentAhora() {
   };
 
   const dbColor = displayCategory ? categoryColorMap[displayCategory] : null;
-  const style = isOutOfPlan ? null : (displayCategory ? CATEGORY_STYLES[displayCategory] : null);
+  const style = isOutOfPlan ? null : (displayCategory ? activeCatStyles[displayCategory] : null);
   const activeColor = dbColor || style?.textColor || null;
   const dark = useDarkMode();
   const nowMin = today.getHours() * 60 + today.getMinutes();
@@ -269,7 +321,7 @@ export function AlignmentAhora() {
 
         {isDeviated && plannedCategory && (
           <p className="text-[10px] mt-1 px-2 py-0.5 rounded-full inline-block bg-primary/10 text-primary">
-            plan: {CATEGORY_TO_PROJECT[plannedCategory] || plannedCategory}
+            plan: {activeCatToProject[plannedCategory] || plannedCategory}
           </p>
         )}
 
@@ -327,7 +379,7 @@ export function AlignmentAhora() {
       {/* Next block */}
       {nextBlock && (
         <div className="rounded-xl bg-secondary/50 border border-border p-3 flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || activeCatStyles[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Next</p>
             <p className="text-sm font-medium truncate">{nextBlock.activity}</p>
@@ -357,7 +409,7 @@ export function AlignmentAhora() {
                 >
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: categoryColorMap[block.category] || CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
+                    style={{ backgroundColor: categoryColorMap[block.category] || activeCatStyles[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
                   />
                   <span className={`flex-1 truncate ${isDone ? "line-through" : ""} ${isActive ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                     {block.activity}
@@ -386,19 +438,20 @@ export function AlignmentAhora() {
           <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-center mb-4">WHAT ARE YOU DOING?</p>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {ACTIVITY_OPTIONS.map(opt => (
+            {activeActivityOptions.map(opt => (
               <CategoryBg
                 key={opt.category}
                 category={opt.category}
                 selected={activeCategory === opt.category}
                 projectColor={categoryColorMap[opt.category]}
+                catStyles={activeCatStyles}
                 className="rounded-xl p-3 cursor-pointer transition-all hover:shadow-sm"
               >
                 <button onClick={() => handleStartActivity(opt.category)} className="w-full text-left">
                   <p className="text-sm font-semibold">{opt.label}</p>
                   {opt.motor && (
                     <p className="text-[10px] mt-0.5 opacity-70">
-                      {CATEGORY_STYLES[opt.category]?.motorLabel}
+                      {activeCatStyles[opt.category]?.motorLabel}
                     </p>
                   )}
                 </button>

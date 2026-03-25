@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useAppContext } from "@/contexts/AppContext";
-import { DEMO_WEEK_ENTRIES, DEMO_TREND_ENTRIES, DEMO_STREAK } from "@/lib/demoData";
+import { DEMO_WEEK_ENTRIES, DEMO_TREND_ENTRIES, DEMO_STREAK, DEMO_WEEKLY_PLAN, DEMO_CATEGORY_STYLES, DEMO_CATEGORY_TO_PROJECT } from "@/lib/demoData";
 import { Flame, Check, Minus, X as XIcon } from "lucide-react";
 import {
   WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT,
@@ -16,9 +16,9 @@ import { SessionsPerDayChart } from "./alignment/SessionsPerDayChart";
 import { WeeklyTrendChart } from "./alignment/WeeklyTrendChart";
 import { MotorAlert } from "./alignment/MotorAlert";
 
-function getProjectCategory(projectName: string): string | null {
+function getProjectCategory(projectName: string, catToProject: Record<string, string>): string | null {
   const lower = projectName.toLowerCase();
-  for (const [cat, name] of Object.entries(CATEGORY_TO_PROJECT)) {
+  for (const [cat, name] of Object.entries(catToProject)) {
     if (name.toLowerCase() === lower) return cat;
   }
   return null;
@@ -36,10 +36,10 @@ function getDescriptivePhrase(pct: number): { text: string; color: string } {
   return { text: "Time to start", color: "hsl(var(--muted-foreground))" };
 }
 
-/** Get motor categories from weekly plan */
-function getMotorCategories(): Set<string> {
+/** Get motor categories from a plan */
+function getMotorCategories(plan: PlanBlock[][]): Set<string> {
   const cats = new Set<string>();
-  for (const day of WEEKLY_PLAN) {
+  for (const day of plan) {
     for (const block of day) {
       if (block.motor) cats.add(block.category);
     }
@@ -47,12 +47,24 @@ function getMotorCategories(): Set<string> {
   return cats;
 }
 
-/** Count planned motor sessions per day (distinct motor blocks) */
-function getPlannedSessionsPerDay(): number[] {
-  const motorCats = getMotorCategories();
-  return WEEKLY_PLAN.slice(0, 5).map(day =>
+/** Count planned motor sessions per day */
+function getPlannedSessionsPerDay(plan: PlanBlock[][]): number[] {
+  const motorCats = getMotorCategories(plan);
+  return plan.slice(0, 5).map(day =>
     day.filter(b => motorCats.has(b.category)).length
   );
+}
+
+function getPlannedMinutesForDayFromPlan(plan: PlanBlock[][], dayIndex: number, category: string): number {
+  if (dayIndex > 4 || dayIndex >= plan.length) return 0;
+  const dayBlocks = plan[dayIndex];
+  let total = 0;
+  for (const block of dayBlocks) {
+    if (block.category === category) {
+      total += timeToMinutes(block.end) - timeToMinutes(block.start);
+    }
+  }
+  return total;
 }
 
 export function AlignmentSemana() {
@@ -62,6 +74,9 @@ export function AlignmentSemana() {
   const { visualTheme } = useVisualTheme();
   const { mode } = useAppContext();
   const isDemo = mode === "demo";
+  const activePlan = isDemo ? DEMO_WEEKLY_PLAN : WEEKLY_PLAN;
+  const activeCatToProject = isDemo ? DEMO_CATEGORY_TO_PROJECT : CATEGORY_TO_PROJECT;
+  const activeCatStyles = isDemo ? DEMO_CATEGORY_STYLES : CATEGORY_STYLES;
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
   const todayStr = todayISO();
@@ -149,16 +164,22 @@ export function AlignmentSemana() {
 
   const categoryColorMap = useMemo(() => {
     const map: Record<string, string> = {};
+    if (isDemo) {
+      for (const [cat, style] of Object.entries(DEMO_CATEGORY_STYLES)) {
+        map[cat] = style.textColor;
+      }
+      return map;
+    }
     if (!projects) return map;
     for (const p of projects) {
-      const cat = getProjectCategory(p.name);
+      const cat = getProjectCategory(p.name, activeCatToProject);
       if (cat) map[cat] = p.color;
     }
     return map;
-  }, [projects]);
+  }, [projects, isDemo]);
 
   // --- HERO METRICS ---
-  const plannedSessionsPerDay = useMemo(() => getPlannedSessionsPerDay(), []);
+  const plannedSessionsPerDay = useMemo(() => getPlannedSessionsPerDay(activePlan), [activePlan]);
   const totalPlannedSessions = useMemo(() => plannedSessionsPerDay.reduce((s, v) => s + v, 0), [plannedSessionsPerDay]);
 
   const actualSessionsPerDay = useMemo(() => {
@@ -178,9 +199,9 @@ export function AlignmentSemana() {
     let plannedMin = 0;
     let actualMin = 0;
     for (const mp of motorProjects) {
-      const cat = getProjectCategory(mp.name);
+      const cat = getProjectCategory(mp.name, activeCatToProject);
       if (cat) {
-        for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDay(d, cat);
+        for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDayFromPlan(activePlan, d, cat);
       }
       actualMin += weekEntries
         .filter(e => e.project_id === mp.id)
@@ -201,8 +222,8 @@ export function AlignmentSemana() {
       let totalPlanned = 0;
       let totalMatch = 0;
       for (const mp of motorProjects) {
-        const cat = getProjectCategory(mp.name);
-        const plannedMin = cat ? getPlannedMinutesForDay(dayIndex, cat) : 0;
+        const cat = getProjectCategory(mp.name, activeCatToProject);
+        const plannedMin = cat ? getPlannedMinutesForDayFromPlan(activePlan, dayIndex, cat) : 0;
         const actualSec = dayEntries.filter(e => e.project_id === mp.id).reduce((s, e) => s + (e.duration_seconds || 0), 0);
         totalPlanned += plannedMin;
         totalMatch += Math.min(plannedMin, actualSec / 60);
@@ -218,9 +239,9 @@ export function AlignmentSemana() {
     return motorProjects.map(mp => {
       const actualSec = weekEntries.filter(e => e.project_id === mp.id).reduce((s, e) => s + (e.duration_seconds || 0), 0);
       const actualHours = +(actualSec / 3600).toFixed(1);
-      const cat = getProjectCategory(mp.name);
+      const cat = getProjectCategory(mp.name, activeCatToProject);
       let plannedMin = 0;
-      if (cat) { for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDay(d, cat); }
+      if (cat) { for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDayFromPlan(activePlan, d, cat); }
       const goalHours = (mp.weekly_goal_hours as number) || 0;
       const pct = goalHours > 0 ? Math.min((actualHours / goalHours) * 100, 100) : 0;
       return {
@@ -267,10 +288,10 @@ export function AlignmentSemana() {
     if (selectedDay === null || !weekEntries) return null;
     const date = weekDates[selectedDay];
     const dayEntries = weekEntries.filter(e => toNZDate(e.start_time) === date);
-    const plan = selectedDay < 5 ? WEEKLY_PLAN[selectedDay] : [];
+    const plan = selectedDay < 5 ? activePlan[selectedDay] : [];
     const blocks = plan.filter(b => !["rutina", "buffer"].includes(b.category));
     return blocks.map(block => {
-      const projectName = CATEGORY_TO_PROJECT[block.category];
+      const projectName = activeCatToProject[block.category];
       const matching = dayEntries.filter(e => {
         const eName = (e.projects as any)?.name;
         return eName && projectName && eName.toLowerCase() === projectName.toLowerCase();
@@ -280,7 +301,7 @@ export function AlignmentSemana() {
       const plannedMin = timeToMinutes(block.end) - timeToMinutes(block.start);
       let matchStatus: "match" | "partial" | "miss" = "miss";
       if (actualMin > 0) matchStatus = Math.abs(actualMin - plannedMin) <= 20 ? "match" : "partial";
-      const fallbackStyle = CATEGORY_STYLES[block.category];
+      const fallbackStyle = activeCatStyles[block.category];
       const dbColor = categoryColorMap[block.category];
       const resolvedStyle = {
         textColor: dbColor || fallbackStyle?.textColor,
