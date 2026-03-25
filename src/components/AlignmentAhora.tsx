@@ -266,7 +266,7 @@ export function AlignmentAhora() {
   };
 
   const dbColor = displayCategory ? categoryColorMap[displayCategory] : null;
-  const style = isOutOfPlan ? null : (displayCategory ? CATEGORY_STYLES[displayCategory] : null);
+  const style = isOutOfPlan ? null : (displayCategory ? activeCatStyles[displayCategory] : null);
   const activeColor = dbColor || style?.textColor || null;
   const dark = useDarkMode();
   const nowMin = today.getHours() * 60 + today.getMinutes();
@@ -321,7 +321,7 @@ export function AlignmentAhora() {
 
         {isDeviated && plannedCategory && (
           <p className="text-[10px] mt-1 px-2 py-0.5 rounded-full inline-block bg-primary/10 text-primary">
-            plan: {CATEGORY_TO_PROJECT[plannedCategory] || plannedCategory}
+            plan: {activeCatToProject[plannedCategory] || plannedCategory}
           </p>
         )}
 
@@ -379,7 +379,7 @@ export function AlignmentAhora() {
       {/* Next block */}
       {nextBlock && (
         <div className="rounded-xl bg-secondary/50 border border-border p-3 flex items-center gap-3">
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || CATEGORY_STYLES[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoryColorMap[nextBlock.category] || activeCatStyles[nextBlock.category]?.textColor || "hsl(var(--muted-foreground))" }} />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Next</p>
             <p className="text-sm font-medium truncate">{nextBlock.activity}</p>
@@ -409,7 +409,7 @@ export function AlignmentAhora() {
                 >
                   <span
                     className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: categoryColorMap[block.category] || CATEGORY_STYLES[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
+                    style={{ backgroundColor: categoryColorMap[block.category] || activeCatStyles[block.category]?.textColor || "hsl(var(--muted-foreground))" }}
                   />
                   <span className={`flex-1 truncate ${isDone ? "line-through" : ""} ${isActive ? "font-medium text-foreground" : "text-muted-foreground"}`}>
                     {block.activity}
@@ -438,19 +438,20 @@ export function AlignmentAhora() {
           <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground text-center mb-4">WHAT ARE YOU DOING?</p>
 
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {ACTIVITY_OPTIONS.map(opt => (
+            {activeActivityOptions.map(opt => (
               <CategoryBg
                 key={opt.category}
                 category={opt.category}
                 selected={activeCategory === opt.category}
                 projectColor={categoryColorMap[opt.category]}
+                catStyles={activeCatStyles}
                 className="rounded-xl p-3 cursor-pointer transition-all hover:shadow-sm"
               >
                 <button onClick={() => handleStartActivity(opt.category)} className="w-full text-left">
                   <p className="text-sm font-semibold">{opt.label}</p>
                   {opt.motor && (
                     <p className="text-[10px] mt-0.5 opacity-70">
-                      {CATEGORY_STYLES[opt.category]?.motorLabel}
+                      {activeCatStyles[opt.category]?.motorLabel}
                     </p>
                   )}
                 </button>
