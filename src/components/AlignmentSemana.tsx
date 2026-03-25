@@ -74,6 +74,9 @@ export function AlignmentSemana() {
   const { visualTheme } = useVisualTheme();
   const { mode } = useAppContext();
   const isDemo = mode === "demo";
+  const activePlan = isDemo ? DEMO_WEEKLY_PLAN : WEEKLY_PLAN;
+  const activeCatToProject = isDemo ? DEMO_CATEGORY_TO_PROJECT : CATEGORY_TO_PROJECT;
+  const activeCatStyles = isDemo ? DEMO_CATEGORY_STYLES : CATEGORY_STYLES;
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
   const todayStr = todayISO();
