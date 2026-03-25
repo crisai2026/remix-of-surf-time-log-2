@@ -1,10 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_TAGS } from "@/lib/demoData";
 
 export function useTags() {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["tags"],
+    queryKey: ["tags", mode],
     queryFn: async () => {
+      if (mode === "demo") return DEMO_TAGS;
       const { data, error } = await supabase
         .from("tags")
         .select("*")
@@ -61,9 +65,7 @@ export function useSetEntryTags() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ entryId, tagIds }: { entryId: string; tagIds: string[] }) => {
-      // Remove existing
       await supabase.from("time_entry_tags").delete().eq("time_entry_id", entryId);
-      // Insert new
       if (tagIds.length > 0) {
         const { error } = await supabase.from("time_entry_tags").insert(
           tagIds.map((tag_id) => ({ time_entry_id: entryId, tag_id }))

@@ -9,7 +9,6 @@ import { AuthModal } from "@/components/AuthModal";
 import { DemoBanner } from "@/components/DemoBanner";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
-import DemoApp from "./pages/DemoApp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,7 +33,7 @@ function AppContent() {
       ) : mode === "demo" ? (
         <>
           <DemoBanner />
-          <DemoApp />
+          <Index />
         </>
       ) : (
         <BrowserRouter>

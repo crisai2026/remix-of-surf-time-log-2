@@ -14,6 +14,7 @@ import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { getThemeContent } from "@/lib/themeContent";
 import { ActivityLog } from "@/components/ActivityLog";
 import { useAppContext } from "@/contexts/AppContext";
+import { DemoOverlay } from "@/components/DemoOverlay";
 
 type AppMode = "tracker" | "alignment" | "log";
 type TrackerTab = "timer" | "dashboard" | "projects";
@@ -25,7 +26,8 @@ export default function Index() {
   const [alignmentTab, setAlignmentTab] = useState<AlignmentTab>("now");
   const { visualTheme } = useVisualTheme();
   const content = getThemeContent(visualTheme);
-  const { user, signOut } = useAppContext();
+  const { user, signOut, mode: appMode } = useAppContext();
+  const isDemo = appMode === "demo";
 
   return (
     <div className="min-h-screen bg-background pb-14">
@@ -37,7 +39,7 @@ export default function Index() {
               <span className="text-[11px] text-muted-foreground/70 tracking-wider truncate">{content.easterEgg}</span>
             )}
             <div className="ml-auto shrink-0 flex items-center gap-1">
-              <ThemeSelector />
+              {!isDemo && <ThemeSelector />}
               {user && (
                 <button
                   onClick={() => signOut()}
@@ -107,12 +109,21 @@ export default function Index() {
         {mode === "tracker" ? (
           trackerTab === "timer" ? (
             <>
-              <Timer />
-              <ManualEntry />
+              {isDemo ? (
+                <>
+                  <DemoOverlay><Timer /></DemoOverlay>
+                  <DemoOverlay><ManualEntry /></DemoOverlay>
+                </>
+              ) : (
+                <>
+                  <Timer />
+                  <ManualEntry />
+                </>
+              )}
               <TimelineView />
             </>
           ) : trackerTab === "projects" ? (
-            <ProjectManager />
+            isDemo ? <DemoOverlay><ProjectManager /></DemoOverlay> : <ProjectManager />
           ) : (
             <DashboardCharts />
           )
@@ -127,13 +138,15 @@ export default function Index() {
         )}
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-border bg-card/80 backdrop-blur-sm">
-        <div className="max-w-xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
-          <ThemeToggle />
-          <NotificationSettings />
-          <span className="text-[11px] text-muted-foreground ml-2">Built with focus ✦</span>
+      {!isDemo && (
+        <div className="fixed bottom-0 left-0 right-0 z-10 border-t border-border bg-card/80 backdrop-blur-sm">
+          <div className="max-w-xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
+            <ThemeToggle />
+            <NotificationSettings />
+            <span className="text-[11px] text-muted-foreground ml-2">Built with focus ✦</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
