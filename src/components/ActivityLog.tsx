@@ -8,6 +8,8 @@ import { ClipboardList, Pencil, Trash2 } from "lucide-react";
 import { useDeleteEntry } from "@/lib/hooks/useTimeEntries";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
 import { toast } from "sonner";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_PROJECTS, DEMO_WEEK_ENTRIES } from "@/lib/demoData";
 
 type TimePeriod = "today" | "week" | "month" | "all";
 
@@ -59,17 +61,22 @@ export function ActivityLog() {
 
   const range = useMemo(() => getDateRange(period), [period]);
 
+  const { mode } = useAppContext();
+  const isDemo = mode === "demo";
+
   const { data: projects } = useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_PROJECTS;
       const { data } = await supabase.from("projects").select("*").order("sort_order");
       return data || [];
     },
   });
 
   const { data: entries, isLoading } = useQuery({
-    queryKey: ["log-entries", period],
+    queryKey: ["log-entries", period, mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_WEEK_ENTRIES;
       let query = supabase
         .from("time_entries")
         .select("*, projects(*)")
