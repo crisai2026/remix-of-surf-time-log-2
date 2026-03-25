@@ -3,6 +3,8 @@ import { useVisualTheme } from "@/hooks/useVisualTheme";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects } from "@/lib/hooks/useProjects";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_WEEK_ENTRIES, DEMO_TREND_ENTRIES, DEMO_STREAK } from "@/lib/demoData";
 import { Flame, Check, Minus, X as XIcon } from "lucide-react";
 import {
   WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT,
@@ -58,6 +60,8 @@ export function AlignmentSemana() {
   const dark = useDarkMode();
   const { data: projects } = useProjects();
   const { visualTheme } = useVisualTheme();
+  const { mode } = useAppContext();
+  const isDemo = mode === "demo";
 
   const weekDates = useMemo(() => getWeekDatesForOffset(0), []);
   const todayStr = todayISO();
@@ -67,8 +71,9 @@ export function AlignmentSemana() {
   }, [weekDates, todayStr]);
 
   const { data: weekEntries } = useQuery({
-    queryKey: ["alignment_week_entries", weekDates[0]],
+    queryKey: ["alignment_week_entries", weekDates[0], mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_WEEK_ENTRIES;
       const startUTC = nzMidnightToUTC(weekDates[0]);
       const endDate = new Date(new Date(weekDates[6] + "T12:00:00").getTime());
       endDate.setDate(endDate.getDate() + 1);
@@ -86,8 +91,9 @@ export function AlignmentSemana() {
   });
 
   const { data: streakData } = useQuery({
-    queryKey: ["alignment_streak"],
+    queryKey: ["alignment_streak", mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_STREAK;
       const { data, error } = await supabase
         .from("time_entries")
         .select("start_time")
@@ -112,8 +118,9 @@ export function AlignmentSemana() {
 
   // 4-week trend data
   const { data: trendEntries } = useQuery({
-    queryKey: ["alignment_trend_4w", weekDates[0]],
+    queryKey: ["alignment_trend_4w", weekDates[0], mode],
     queryFn: async () => {
+      if (isDemo) return [...DEMO_WEEK_ENTRIES, ...DEMO_TREND_ENTRIES];
       const week0Dates = getWeekDatesForOffset(-3);
       const startUTC = nzMidnightToUTC(week0Dates[0]);
       const endDate = new Date(new Date(weekDates[6] + "T12:00:00").getTime());

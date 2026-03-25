@@ -9,8 +9,12 @@ import {
   PieChart, Pie, CartesianGrid,
 } from "recharts";
 import { Flame, Clock, TrendingUp, ChevronLeft, ChevronRight, Activity, Pencil } from "lucide-react";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_WEEK_ENTRIES, DEMO_HEATMAP_ENTRIES, DEMO_STREAK } from "@/lib/demoData";
 
 export function DashboardCharts() {
+  const { mode } = useAppContext();
+  const isDemo = mode === "demo";
   const { data: projects } = useProjects();
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -22,10 +26,10 @@ export function DashboardCharts() {
   const weekEnd = weekDates[6];
 
   const { data: weekEntries } = useQuery({
-    queryKey: ["week_entries", weekStart],
+    queryKey: ["week_entries", weekStart, mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_WEEK_ENTRIES;
       const startUTC = nzMidnightToUTC(weekStart);
-      // Day after weekEnd
       const endDate = new Date(new Date(weekEnd + "T12:00:00").getTime());
       endDate.setDate(endDate.getDate() + 1);
       const endDateStr = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
@@ -42,8 +46,9 @@ export function DashboardCharts() {
   });
 
   const { data: streakData } = useQuery({
-    queryKey: ["streak"],
+    queryKey: ["streak", mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_STREAK;
       const { data, error } = await supabase
         .from("time_entries")
         .select("start_time")
@@ -68,8 +73,9 @@ export function DashboardCharts() {
   });
 
   const { data: heatmapEntries } = useQuery({
-    queryKey: ["heatmap_entries"],
+    queryKey: ["heatmap_entries", mode],
     queryFn: async () => {
+      if (isDemo) return DEMO_HEATMAP_ENTRIES;
       const from = new Date();
       from.setDate(from.getDate() - 84);
       const { data, error } = await supabase
