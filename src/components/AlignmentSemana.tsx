@@ -164,16 +164,22 @@ export function AlignmentSemana() {
 
   const categoryColorMap = useMemo(() => {
     const map: Record<string, string> = {};
+    if (isDemo) {
+      for (const [cat, style] of Object.entries(DEMO_CATEGORY_STYLES)) {
+        map[cat] = style.textColor;
+      }
+      return map;
+    }
     if (!projects) return map;
     for (const p of projects) {
-      const cat = getProjectCategory(p.name);
+      const cat = getProjectCategory(p.name, activeCatToProject);
       if (cat) map[cat] = p.color;
     }
     return map;
-  }, [projects]);
+  }, [projects, isDemo]);
 
   // --- HERO METRICS ---
-  const plannedSessionsPerDay = useMemo(() => getPlannedSessionsPerDay(), []);
+  const plannedSessionsPerDay = useMemo(() => getPlannedSessionsPerDay(activePlan), [activePlan]);
   const totalPlannedSessions = useMemo(() => plannedSessionsPerDay.reduce((s, v) => s + v, 0), [plannedSessionsPerDay]);
 
   const actualSessionsPerDay = useMemo(() => {
@@ -193,9 +199,9 @@ export function AlignmentSemana() {
     let plannedMin = 0;
     let actualMin = 0;
     for (const mp of motorProjects) {
-      const cat = getProjectCategory(mp.name);
+      const cat = getProjectCategory(mp.name, activeCatToProject);
       if (cat) {
-        for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDay(d, cat);
+        for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDayFromPlan(activePlan, d, cat);
       }
       actualMin += weekEntries
         .filter(e => e.project_id === mp.id)
@@ -216,8 +222,8 @@ export function AlignmentSemana() {
       let totalPlanned = 0;
       let totalMatch = 0;
       for (const mp of motorProjects) {
-        const cat = getProjectCategory(mp.name);
-        const plannedMin = cat ? getPlannedMinutesForDay(dayIndex, cat) : 0;
+        const cat = getProjectCategory(mp.name, activeCatToProject);
+        const plannedMin = cat ? getPlannedMinutesForDayFromPlan(activePlan, dayIndex, cat) : 0;
         const actualSec = dayEntries.filter(e => e.project_id === mp.id).reduce((s, e) => s + (e.duration_seconds || 0), 0);
         totalPlanned += plannedMin;
         totalMatch += Math.min(plannedMin, actualSec / 60);
@@ -233,9 +239,9 @@ export function AlignmentSemana() {
     return motorProjects.map(mp => {
       const actualSec = weekEntries.filter(e => e.project_id === mp.id).reduce((s, e) => s + (e.duration_seconds || 0), 0);
       const actualHours = +(actualSec / 3600).toFixed(1);
-      const cat = getProjectCategory(mp.name);
+      const cat = getProjectCategory(mp.name, activeCatToProject);
       let plannedMin = 0;
-      if (cat) { for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDay(d, cat); }
+      if (cat) { for (let d = 0; d < 5; d++) plannedMin += getPlannedMinutesForDayFromPlan(activePlan, d, cat); }
       const goalHours = (mp.weekly_goal_hours as number) || 0;
       const pct = goalHours > 0 ? Math.min((actualHours / goalHours) * 100, 100) : 0;
       return {
@@ -282,10 +288,10 @@ export function AlignmentSemana() {
     if (selectedDay === null || !weekEntries) return null;
     const date = weekDates[selectedDay];
     const dayEntries = weekEntries.filter(e => toNZDate(e.start_time) === date);
-    const plan = selectedDay < 5 ? WEEKLY_PLAN[selectedDay] : [];
+    const plan = selectedDay < 5 ? activePlan[selectedDay] : [];
     const blocks = plan.filter(b => !["rutina", "buffer"].includes(b.category));
     return blocks.map(block => {
-      const projectName = CATEGORY_TO_PROJECT[block.category];
+      const projectName = activeCatToProject[block.category];
       const matching = dayEntries.filter(e => {
         const eName = (e.projects as any)?.name;
         return eName && projectName && eName.toLowerCase() === projectName.toLowerCase();
@@ -295,7 +301,7 @@ export function AlignmentSemana() {
       const plannedMin = timeToMinutes(block.end) - timeToMinutes(block.start);
       let matchStatus: "match" | "partial" | "miss" = "miss";
       if (actualMin > 0) matchStatus = Math.abs(actualMin - plannedMin) <= 20 ? "match" : "partial";
-      const fallbackStyle = CATEGORY_STYLES[block.category];
+      const fallbackStyle = activeCatStyles[block.category];
       const dbColor = categoryColorMap[block.category];
       const resolvedStyle = {
         textColor: dbColor || fallbackStyle?.textColor,
