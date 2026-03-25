@@ -1,10 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAppContext } from "@/contexts/AppContext";
+import { DEMO_PROJECTS, DEMO_TASKS } from "@/lib/demoData";
 
 export function useProjects() {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", mode],
     queryFn: async () => {
+      if (mode === "demo") return DEMO_PROJECTS;
       const { data, error } = await supabase
         .from("projects")
         .select("*")
@@ -60,9 +64,11 @@ export function useDeleteProject() {
 }
 
 export function useTasks(projectId?: string) {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["tasks", projectId],
+    queryKey: ["tasks", projectId, mode],
     queryFn: async () => {
+      if (mode === "demo") return DEMO_TASKS.filter(t => !projectId || t.project_id === projectId);
       let q = supabase.from("tasks").select("*");
       if (projectId) q = q.eq("project_id", projectId);
       const { data, error } = await q.order("created_at");
