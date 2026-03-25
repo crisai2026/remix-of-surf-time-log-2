@@ -37,11 +37,12 @@ function useDarkMode() {
   return document.documentElement.classList.contains("dark");
 }
 
-function CategoryBg({ category, children, className = "", selected = false, projectColor }: {
-  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string;
+function CategoryBg({ category, children, className = "", selected = false, projectColor, catStyles }: {
+  category: string; children: React.ReactNode; className?: string; selected?: boolean; projectColor?: string; catStyles?: Record<string, import("@/lib/weeklyPlan").CategoryStyle>;
 }) {
   const dark = useDarkMode();
-  const style = CATEGORY_STYLES[category];
+  const styles = catStyles || CATEGORY_STYLES;
+  const style = styles[category];
   const color = projectColor || style?.textColor;
   if (!color && !style) return <div className={className}>{children}</div>;
   return (
@@ -67,6 +68,14 @@ export function AlignmentAhora() {
   const pauseTimer = usePauseTimer();
   const resumeTimer = useResumeTimer();
   const queryClient = useQueryClient();
+  const { mode } = useAppContext();
+  const isDemo = mode === "demo";
+
+  // Choose plan data based on mode
+  const activeCatStyles = isDemo ? DEMO_CATEGORY_STYLES : CATEGORY_STYLES;
+  const activeCatToProject = isDemo ? DEMO_CATEGORY_TO_PROJECT : CATEGORY_TO_PROJECT;
+  const activeActivityOptions = isDemo ? DEMO_ACTIVITY_OPTIONS : ACTIVITY_OPTIONS;
+  const activeProjToCat = isDemo ? DEMO_PROJECT_TO_CATEGORY : PROJECT_TO_CATEGORY;
 
   const [elapsed, setElapsed] = useState(0);
   const [showSwitcher, setShowSwitcher] = useState(false);
@@ -80,24 +89,61 @@ export function AlignmentAhora() {
     return () => clearInterval(id);
   }, []);
 
-  const currentResult = getCurrentBlock();
-  const currentBlock = currentResult?.block || null;
-  const nextBlock = getNextBlock();
-  const todayPlan = getTodayPlan();
+  // Demo: derive current/next/today from demo plan
   const dayIndex = getCurrentDayIndex();
   const dayName = getDayName(dayIndex);
   const today = new Date();
 
+  const demoDayPlan = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return [];
+    return DEMO_WEEKLY_PLAN[dayIndex];
+  }, [isDemo, dayIndex]);
+
+  const demoCurrentResult = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return null;
+    const nowMin = today.getHours() * 60 + today.getMinutes();
+    for (let i = 0; i < demoDayPlan.length; i++) {
+      const b = demoDayPlan[i];
+      if (nowMin >= timeToMinutes(b.start) && nowMin < timeToMinutes(b.end)) {
+        return { block: b, index: i };
+      }
+    }
+    return null;
+  }, [isDemo, dayIndex, demoDayPlan]);
+
+  const demoNextBlock = useMemo(() => {
+    if (!isDemo || dayIndex > 4) return null;
+    const nowMin = today.getHours() * 60 + today.getMinutes();
+    for (const b of demoDayPlan) {
+      if (timeToMinutes(b.start) > nowMin) return b;
+    }
+    return null;
+  }, [isDemo, dayIndex, demoDayPlan]);
+
+  const currentResult = isDemo ? demoCurrentResult : getCurrentBlock();
+  const currentBlock = currentResult?.block || null;
+  const nextBlock = isDemo ? demoNextBlock : getNextBlock();
+  const todayPlan = isDemo ? demoDayPlan : getTodayPlan();
+
+  const getProjectCat = (name: string): string | null => activeProjToCat[name.toLowerCase()] || null;
+
   // Build category → DB project color lookup
   const categoryColorMap = useMemo(() => {
     const map: Record<string, string> = {};
+    if (isDemo) {
+      // Use demo project colors directly
+      for (const [cat, style] of Object.entries(DEMO_CATEGORY_STYLES)) {
+        map[cat] = style.textColor;
+      }
+      return map;
+    }
     if (!projects) return map;
     for (const p of projects) {
-      const cat = getProjectCategory(p.name);
+      const cat = getProjectCat(p.name);
       if (cat) map[cat] = p.color;
     }
     return map;
-  }, [projects]);
+  }, [projects, isDemo]);
 
   // Derive active category from running entry (case-insensitive)
   const activeCategory = useMemo(() => {
