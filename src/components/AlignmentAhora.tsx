@@ -150,7 +150,7 @@ export function AlignmentAhora() {
     if (!running) return null;
     const projectName = (running.projects as any)?.name;
     if (!projectName) return null;
-    return getProjectCategory(projectName);
+    return getProjectCat(projectName);
   }, [running]);
 
   // Display info - use description for out-of-plan entries
@@ -159,8 +159,8 @@ export function AlignmentAhora() {
   const displayActivity = isOutOfPlan
     ? (running?.description || "Off plan")
     : activeCategory
-      ? (ACTIVITY_OPTIONS.find(a => a.category === activeCategory)?.label ||
-         CATEGORY_TO_PROJECT[activeCategory] ||
+      ? (activeActivityOptions.find(a => a.category === activeCategory)?.label ||
+         activeCatToProject[activeCategory] ||
          (running?.projects as any)?.name || activeCategory)
       : currentBlock?.activity || "Free time";
 
