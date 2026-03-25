@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useAppContext } from "@/contexts/AppContext";
-import { DEMO_WEEK_ENTRIES, DEMO_TREND_ENTRIES, DEMO_STREAK } from "@/lib/demoData";
+import { DEMO_WEEK_ENTRIES, DEMO_TREND_ENTRIES, DEMO_STREAK, DEMO_WEEKLY_PLAN, DEMO_CATEGORY_STYLES, DEMO_CATEGORY_TO_PROJECT } from "@/lib/demoData";
 import { Flame, Check, Minus, X as XIcon } from "lucide-react";
 import {
   WEEKLY_PLAN, CATEGORY_STYLES, CATEGORY_TO_PROJECT,
