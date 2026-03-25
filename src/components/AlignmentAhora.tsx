@@ -5,6 +5,11 @@ import {
   getDayName, CATEGORY_STYLES, ACTIVITY_OPTIONS, CATEGORY_TO_PROJECT,
   timeToMinutes, type PlanBlock,
 } from "@/lib/weeklyPlan";
+import {
+  DEMO_WEEKLY_PLAN, DEMO_CATEGORY_STYLES, DEMO_ACTIVITY_OPTIONS,
+  DEMO_CATEGORY_TO_PROJECT,
+} from "@/lib/demoData";
+import { useAppContext } from "@/contexts/AppContext";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useRunningEntry, useStartTimer, useStopTimer, usePauseTimer, useResumeTimer } from "@/lib/hooks/useTimeEntries";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,14 +19,15 @@ import { formatTimer } from "@/lib/formatTime";
 import { toast } from "sonner";
 
 // Case-insensitive reverse lookup: project name → category
-function buildProjectToCategory(): Record<string, string> {
+function buildProjectToCategory(catToProject: Record<string, string>): Record<string, string> {
   const map: Record<string, string> = {};
-  Object.entries(CATEGORY_TO_PROJECT).forEach(([cat, name]) => {
+  Object.entries(catToProject).forEach(([cat, name]) => {
     map[name.toLowerCase()] = cat;
   });
   return map;
 }
-const PROJECT_TO_CATEGORY = buildProjectToCategory();
+const PROJECT_TO_CATEGORY = buildProjectToCategory(CATEGORY_TO_PROJECT);
+const DEMO_PROJECT_TO_CATEGORY = buildProjectToCategory(DEMO_CATEGORY_TO_PROJECT);
 
 function getProjectCategory(projectName: string): string | null {
   return PROJECT_TO_CATEGORY[projectName.toLowerCase()] || null;

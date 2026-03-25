@@ -126,3 +126,74 @@ export const DEMO_TAGS = [
 ];
 
 export const DEMO_STREAK = 5;
+
+// --- DEMO WEEKLY PLAN (fictional, no personal categories) ---
+import type { PlanBlock, CategoryStyle } from "@/lib/weeklyPlan";
+
+export const DEMO_CATEGORY_STYLES: Record<string, CategoryStyle> = {
+  deepwork:    { textColor: "#0C447C", lightBg: "#E6F1FB", darkBg: "#152840", motorLabel: "Engine 1 · Deep Work" },
+  learnai:     { textColor: "#6366F1", lightBg: "#EEEDFE", darkBg: "#2A2854", motorLabel: "Engine 2 · Learn AI" },
+  sideproject: { textColor: "#2E7D32", lightBg: "#E8F5E9", darkBg: "#1B3A1B", motorLabel: "Engine 3 · Side Project" },
+  admin:       { textColor: "#78716C", lightBg: "#F5F5F4", darkBg: "#2A2724" },
+  focusblock:  { textColor: "#D97706", lightBg: "#FEF3C7", darkBg: "#3A2E10" },
+};
+
+export const DEMO_CATEGORY_TO_PROJECT: Record<string, string> = {
+  deepwork: "Deep Work",
+  learnai: "Learn AI",
+  sideproject: "Side Project",
+  admin: "Admin",
+  focusblock: "Focus Block",
+};
+
+export const DEMO_ACTIVITY_OPTIONS = [
+  { label: "Deep Work", category: "deepwork", motor: 1 },
+  { label: "Learn AI", category: "learnai", motor: 2 },
+  { label: "Side Project", category: "sideproject", motor: 3 },
+  { label: "Admin", category: "admin" },
+  { label: "Focus Block", category: "focusblock" },
+];
+
+export const DEMO_WEEKLY_PLAN: PlanBlock[][] = [
+  // Monday
+  [
+    { start: "09:00", end: "11:30", activity: "Deep Work", category: "deepwork", motor: 1 },
+    { start: "11:45", end: "12:30", activity: "Learn AI", category: "learnai", motor: 2 },
+    { start: "13:30", end: "15:00", activity: "Side Project", category: "sideproject", motor: 3 },
+    { start: "15:15", end: "16:00", activity: "Admin", category: "admin" },
+  ],
+  // Tuesday
+  [
+    { start: "09:00", end: "10:30", activity: "Focus Block", category: "focusblock" },
+    { start: "10:45", end: "12:30", activity: "Deep Work", category: "deepwork", motor: 1 },
+    { start: "13:30", end: "14:15", activity: "Learn AI", category: "learnai", motor: 2 },
+    { start: "14:30", end: "16:00", activity: "Side Project", category: "sideproject", motor: 3 },
+  ],
+  // Wednesday
+  [
+    { start: "09:00", end: "11:00", activity: "Deep Work", category: "deepwork", motor: 1 },
+    { start: "11:15", end: "12:00", activity: "Learn AI", category: "learnai", motor: 2 },
+    { start: "13:00", end: "14:30", activity: "Side Project", category: "sideproject", motor: 3 },
+    { start: "14:45", end: "15:30", activity: "Admin", category: "admin" },
+  ],
+  // Thursday
+  [
+    { start: "09:00", end: "11:30", activity: "Deep Work", category: "deepwork", motor: 1 },
+    { start: "11:45", end: "12:30", activity: "Learn AI", category: "learnai", motor: 2 },
+    { start: "13:30", end: "15:00", activity: "Focus Block", category: "focusblock" },
+    { start: "15:15", end: "16:00", activity: "Admin", category: "admin" },
+  ],
+  // Friday
+  [
+    { start: "09:00", end: "10:30", activity: "Deep Work", category: "deepwork", motor: 1 },
+    { start: "10:45", end: "11:30", activity: "Learn AI", category: "learnai", motor: 2 },
+    { start: "12:00", end: "13:30", activity: "Side Project", category: "sideproject", motor: 3 },
+    { start: "14:00", end: "15:00", activity: "Focus Block", category: "focusblock" },
+  ],
+];
+
+export const DEMO_MOTOR_GOALS: Record<number, { label: string; category: string; weeklyHours: number }> = {
+  1: { label: "Engine 1 · Deep Work", category: "deepwork", weeklyHours: 12 },
+  2: { label: "Engine 2 · Learn AI", category: "learnai", weeklyHours: 8 },
+  3: { label: "Engine 3 · Side Project", category: "sideproject", weeklyHours: 6 },
+};
