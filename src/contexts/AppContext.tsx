@@ -43,7 +43,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       loading,
       signUp,
       signIn,
-      signOut,
+      signOut: handleSignOut,
       showAuthModal,
       setShowAuthModal,
     }}>
