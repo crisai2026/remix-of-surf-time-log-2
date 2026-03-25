@@ -16,9 +16,9 @@ import { SessionsPerDayChart } from "./alignment/SessionsPerDayChart";
 import { WeeklyTrendChart } from "./alignment/WeeklyTrendChart";
 import { MotorAlert } from "./alignment/MotorAlert";
 
-function getProjectCategory(projectName: string): string | null {
+function getProjectCategory(projectName: string, catToProject: Record<string, string>): string | null {
   const lower = projectName.toLowerCase();
-  for (const [cat, name] of Object.entries(CATEGORY_TO_PROJECT)) {
+  for (const [cat, name] of Object.entries(catToProject)) {
     if (name.toLowerCase() === lower) return cat;
   }
   return null;
@@ -36,10 +36,10 @@ function getDescriptivePhrase(pct: number): { text: string; color: string } {
   return { text: "Time to start", color: "hsl(var(--muted-foreground))" };
 }
 
-/** Get motor categories from weekly plan */
-function getMotorCategories(): Set<string> {
+/** Get motor categories from a plan */
+function getMotorCategories(plan: PlanBlock[][]): Set<string> {
   const cats = new Set<string>();
-  for (const day of WEEKLY_PLAN) {
+  for (const day of plan) {
     for (const block of day) {
       if (block.motor) cats.add(block.category);
     }
@@ -47,12 +47,24 @@ function getMotorCategories(): Set<string> {
   return cats;
 }
 
-/** Count planned motor sessions per day (distinct motor blocks) */
-function getPlannedSessionsPerDay(): number[] {
-  const motorCats = getMotorCategories();
-  return WEEKLY_PLAN.slice(0, 5).map(day =>
+/** Count planned motor sessions per day */
+function getPlannedSessionsPerDay(plan: PlanBlock[][]): number[] {
+  const motorCats = getMotorCategories(plan);
+  return plan.slice(0, 5).map(day =>
     day.filter(b => motorCats.has(b.category)).length
   );
+}
+
+function getPlannedMinutesForDayFromPlan(plan: PlanBlock[][], dayIndex: number, category: string): number {
+  if (dayIndex > 4 || dayIndex >= plan.length) return 0;
+  const dayBlocks = plan[dayIndex];
+  let total = 0;
+  for (const block of dayBlocks) {
+    if (block.category === category) {
+      total += timeToMinutes(block.end) - timeToMinutes(block.start);
+    }
+  }
+  return total;
 }
 
 export function AlignmentSemana() {
