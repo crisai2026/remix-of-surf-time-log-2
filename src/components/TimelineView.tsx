@@ -5,12 +5,15 @@ import { Trash2, Clock, Pencil } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { EditEntryDialog } from "@/components/EditEntryDialog";
+import { useAppContext } from "@/contexts/AppContext";
 
 function useEntryTagsMap(entryIds: string[]) {
+  const { mode } = useAppContext();
   return useQuery({
-    queryKey: ["entry_tags_map", entryIds],
+    queryKey: ["entry_tags_map", entryIds, mode],
     enabled: entryIds.length > 0,
     queryFn: async () => {
+      if (mode === "demo") return {};
       const { data, error } = await supabase
         .from("time_entry_tags")
         .select("*, tags(*)")
