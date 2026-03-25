@@ -30,6 +30,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setModeState(m);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setModeState("landing");
+  };
+
   return (
     <AppContext.Provider value={{
       mode: effectiveMode,
@@ -38,7 +43,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       loading,
       signUp,
       signIn,
-      signOut,
+      signOut: handleSignOut,
       showAuthModal,
       setShowAuthModal,
     }}>
